@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "name": "Cancha 1",
+    "complex": "Sede Central",
+    "type": "Césped Sintético",
+    "capacity": "5 vs 5",
+    "price": 5000
+  },
+  {
+    "id": 2,
+    "name": "Cancha 2",
+    "complex": "Sede Central",
+    "type": "Césped Natural",
+    "capacity": "7 vs 7",
+    "price": 7000
+  },
+  {
+    "id": 3,
+    "name": "Cancha 3",
+    "complex": "Sede Norte",
+    "type": "Césped Sintético",
+    "capacity": "5 vs 5",
+    "price": 5000
+  },
+  {
+    "id": 4,
+    "name": "Cancha 4",
+    "complex": "Sede Norte",
+    "type": "Césped Sintético",
+    "capacity": "8 vs 8",
+    "price": 8000
+  }
+]

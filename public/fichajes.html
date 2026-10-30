@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <base href="/v1/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Encontrá jugadores para tu equipo o publicá tu perfil en el mercado de pases de La Bombonerita FC.">
+    <meta name="theme-color" content="#f2f0e8">
+    <title>Fichajes | La Bombonerita Fútbol Club</title>
+    <link rel="preconnect" href="https://api.fontshare.com">
+    <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="fichajes">
+    <header class="main-header">
+        <div class="header-container">
+            <a href="index.html#complejo" class="brand-logo">
+                <span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M24 3 42 10v13c0 11-7.6 18-18 22C13.6 41 6 34 6 23V10L24 3Z" fill="currentColor"/><path d="m24 12 4 3 1 5-5 3-5-3 1-5 4-3Zm-5 8-5 1-2 5 4 4 6-2 2-5m4-3 5 1 2 5-4 4-6-2-2-5m-10-2-3-3m19 3 3-3m-17 13 1 5m12-5-1 5" stroke="#0f172a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div class="brand-text"><span class="brand-name">LA BOMBONERITA</span><span class="brand-badge">Todos los días · 09:00 a 00:00</span></div>
+            </a>
+            <nav class="header-nav" aria-label="Navegación principal">
+                <a href="index.html#complejo" class="nav-link">El complejo</a>
+                <a href="index.html#reservas" class="nav-link">Reservas</a>
+                <a href="fichajes.html" class="nav-link active" id="nav-fichajes" aria-current="page">Fichajes</a>
+                <a href="index.html#ubicacion" class="nav-link">Ubicación</a>
+                <a href="index.html#mis-reservas" class="nav-link" id="nav-my-bookings" hidden>Mis reservas</a>
+                <a href="index.html#admin" class="nav-link" id="nav-admin-link" hidden>Administración</a>
+                <button type="button" id="nav-login-btn" class="nav-btn-login">Iniciar sesión</button>
+            </nav>
+        </div>
+    </header>
+    <main class="main fichajes-page-main">
+        <section id="fichajes" class="fichajes-section">
+                <div class="fichajes-heading">
+                    <div>
+                        <p class="fichajes-eyebrow">MERCADO DE PASES · LA BOMBONERITA</p>
+                        <h2>Un equipo puede estar buscándote.</h2>
+                        <p>Encontrá jugadores para completar el equipo o publicá tu perfil para recibir propuestas.</p>
+                    </div>
+                </div>
+                <div class="fichajes-switch" role="tablist" aria-label="Secciones de Fichajes">
+                    <button type="button" class="fichajes-switch-btn active" id="fichajes-market-tab" role="tab" aria-selected="true" aria-controls="fichajes-market-view" data-fichaje-view="market">Jugadores</button>
+                    <button type="button" class="fichajes-switch-btn" id="fichajes-urgent-tab" role="tab" aria-selected="false" aria-controls="fichajes-urgent-view" data-fichaje-view="urgent">Falta uno</button>
+                </div>
+
+                <div id="fichajes-market-view" class="fichajes-view active" role="tabpanel" aria-labelledby="fichajes-market-tab">
+                    <div class="fichajes-market-heading">
+                        <div>
+                            <h3>Jugadores disponibles</h3>
+                            <p>Buscá por posición, nivel y disponibilidad.</p>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="player-profile-open-btn">Publicar mi perfil <span aria-hidden="true">+</span></button>
+                    </div>
+                    <div id="player-own-profile"></div>
+                    <div class="player-filters">
+                        <div class="player-position-filters" role="group" aria-label="Filtrar por posición">
+                            <button type="button" class="player-filter-chip active" data-player-position="all" aria-pressed="true">Todas las posiciones</button>
+                            <button type="button" class="player-filter-chip" data-player-position="arquero" aria-pressed="false">Arquero</button>
+                            <button type="button" class="player-filter-chip" data-player-position="defensor" aria-pressed="false">Defensor</button>
+                            <button type="button" class="player-filter-chip" data-player-position="mediocampista" aria-pressed="false">Mediocampista</button>
+                            <button type="button" class="player-filter-chip" data-player-position="delantero" aria-pressed="false">Delantero</button>
+                        </div>
+                        <div class="player-select-filters">
+                            <label> Nivel
+                                <select id="player-filter-level">
+                                    <option value="all">Cualquier nivel</option><option value="recreativo">Recreativo</option><option value="intermedio">Intermedio</option><option value="competitivo">Competitivo</option>
+                                </select>
+                            </label>
+                            <label> Sede
+                                <select id="player-filter-venue">
+                                    <option value="all">Todas las sedes</option><option value="central">Sede Central</option><option value="norte">Sede Norte</option>
+                                </select>
+                            </label>
+                            <label> Día
+                                <select id="player-filter-day">
+                                    <option value="all">Cualquier día</option><option value="lunes">Lunes</option><option value="martes">Martes</option><option value="miercoles">Miércoles</option><option value="jueves">Jueves</option><option value="viernes">Viernes</option><option value="sabado">Sábado</option><option value="domingo">Domingo</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="players-grid" class="players-grid" aria-live="polite"></div>
+                </div>
+
+                <div id="fichajes-urgent-view" class="fichajes-view" role="tabpanel" aria-labelledby="fichajes-urgent-tab" hidden>
+                    <div class="fichajes-market-heading urgent-heading">
+                        <div><h3>¿Falta uno para el partido?</h3><p>Publicá un aviso vinculado a tu reserva y encontrá un refuerzo.</p></div>
+                        <button type="button" class="btn btn-primary" id="urgent-notice-open-btn">Publicar aviso <span aria-hidden="true">+</span></button>
+                    </div>
+                    <div id="urgent-own-notices"></div>
+                    <div id="urgent-notices-grid" class="urgent-notices-grid" aria-live="polite"></div>
+                </div>
+            </section>
+    </main>
+    <a href="https://wa.me/543874797240?text=Hola!%20Quiero%20consultar%20por%20el%20complejo%20La%20Bombonerita." target="_blank" rel="noopener" class="whatsapp-float" aria-label="Contactar por WhatsApp">
+        <span class="whatsapp-float-icon" aria-hidden="true">↗</span><span class="whatsapp-float-text">WhatsApp</span>
+    </a>
+    <!-- Modal de confirmación para acciones del perfil -->
+    <div id="confirm-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <h3 id="modal-title">¿Confirmar acción?</h3><p id="confirm-modal-text">Esta acción no se puede deshacer.</p>
+            <div class="modal-actions"><button id="modal-confirm-btn" class="btn btn-danger">Confirmar</button><button id="modal-cancel-btn" class="btn btn-secondary">Volver</button></div>
+        </div>
+    </div>
+    <dialog id="player-profile-dialog" class="fichaje-dialog" aria-labelledby="player-profile-title">
+        <form id="player-profile-form" class="fichaje-form">
+            <div class="fichaje-dialog-heading"><div><p class="fichajes-eyebrow">MERCADO DE PASES</p><h2 id="player-profile-title">Publicá tu perfil</h2><p>Contales a los equipos dónde y cuándo te gusta jugar.</p></div><button type="button" class="dialog-close" data-close-dialog="player-profile-dialog" aria-label="Cerrar">×</button></div>
+            <input type="hidden" id="player-profile-id">
+            <div class="fichaje-form-grid">
+                <label>Nombre o apodo<input id="player-public-name" required minlength="3" maxlength="30" autocomplete="nickname" placeholder="Ej. El Tanque"></label>
+                <label>WhatsApp<input id="player-phone" type="tel" required autocomplete="tel" placeholder="+54 9 387 1234567"><small>Este número será visible para los equipos que consulten tu perfil.</small></label>
+                <label>Posición principal<select id="player-primary-position" required><option value="arquero">Arquero</option><option value="defensor">Defensor</option><option value="mediocampista">Mediocampista</option><option value="delantero">Delantero</option></select></label>
+                <label>Posición secundaria<select id="player-secondary-position"><option value="">Ninguna</option><option value="arquero">Arquero</option><option value="defensor">Defensor</option><option value="mediocampista">Mediocampista</option><option value="delantero">Delantero</option></select></label>
+                <fieldset><legend>Pierna hábil</legend><div class="fichaje-choice-row"><label><input type="radio" name="player-foot" value="diestro" required> Diestro</label><label><input type="radio" name="player-foot" value="zurdo"> Zurdo</label><label><input type="radio" name="player-foot" value="ambidiestro"> Ambidiestro</label></div></fieldset>
+                <label>Nivel<select id="player-level" required><option value="recreativo">Recreativo</option><option value="intermedio">Intermedio</option><option value="competitivo">Competitivo</option></select></label>
+                <fieldset class="availability-fieldset"><legend>Días disponibles <span>Elegí al menos uno</span></legend><div class="availability-days">
+                    <label><input type="checkbox" name="available-days" value="lunes"> Lun</label><label><input type="checkbox" name="available-days" value="martes"> Mar</label><label><input type="checkbox" name="available-days" value="miercoles"> Mié</label><label><input type="checkbox" name="available-days" value="jueves"> Jue</label><label><input type="checkbox" name="available-days" value="viernes"> Vie</label><label><input type="checkbox" name="available-days" value="sabado"> Sáb</label><label><input type="checkbox" name="available-days" value="domingo"> Dom</label>
+                </div><small id="player-days-error" class="fichaje-field-error" hidden>Seleccioná al menos un día.</small></fieldset>
+                <label>Disponibilidad horaria<select id="player-time-slot" required><option value="tarde">Tarde · 14 a 18 h</option><option value="noche">Noche · 18 a 23 h</option><option value="indistinto">Cualquier horario</option></select></label>
+                <label>Sede preferida<select id="player-venue" required><option value="central">Sede Central</option><option value="norte">Sede Norte</option><option value="indistinta">Indistinta</option></select></label>
+                <label class="fichaje-bio-field">Sobre vos <textarea id="player-bio" maxlength="140" rows="3" placeholder="Cómo jugás, qué buscás, disponibilidad extra…"></textarea><small><span id="player-bio-count">0</span>/140</small></label>
+            </div>
+            <label class="fichaje-consent"><input type="checkbox" id="player-contact-consent" required><span>Acepto mostrar mi WhatsApp en el perfil para recibir propuestas de equipos.</span></label>
+            <div class="fichaje-form-actions"><button type="button" class="btn btn-secondary" data-close-dialog="player-profile-dialog">Cancelar</button><button type="submit" class="btn btn-primary" id="player-profile-save-btn">Enviar perfil</button></div>
+        </form>
+    </dialog>
+
+    <dialog id="urgent-notice-dialog" class="fichaje-dialog" aria-labelledby="urgent-notice-title">
+        <form id="urgent-notice-form" class="fichaje-form fichaje-form-compact">
+            <div class="fichaje-dialog-heading"><div><p class="fichajes-eyebrow">FALTA UNO</p><h2 id="urgent-notice-title">Buscá un refuerzo</h2><p>Elegí una reserva próxima de tu cuenta.</p></div><button type="button" class="dialog-close" data-close-dialog="urgent-notice-dialog" aria-label="Cerrar">×</button></div>
+            <label>Mi reserva<select id="urgent-booking-select" required></select><small id="urgent-booking-hint"></small></label>
+            <label>Posición que buscan<select id="urgent-position" required><option value="cualquiera">Cualquier posición</option><option value="arquero">Arquero</option><option value="defensor">Defensor</option><option value="mediocampista">Mediocampista</option><option value="delantero">Delantero</option></select></label>
+            <label>Tipo de partido<select id="urgent-level" required><option value="amistoso">Amistoso</option><option value="tranqui">Picado tranqui</option><option value="fuerte">Partido fuerte</option></select></label>
+            <label>Un detalle para el jugador <textarea id="urgent-notes" maxlength="200" rows="3" placeholder="Nos falta uno para completar el equipo."></textarea></label>
+            <label class="fichaje-consent"><input type="checkbox" id="urgent-contact-consent" required><span>Acepto compartir el teléfono de mi cuenta para que el jugador pueda contactarme.</span></label>
+            <div class="fichaje-form-actions"><button type="button" class="btn btn-secondary" data-close-dialog="urgent-notice-dialog">Cancelar</button><button type="submit" class="btn btn-primary">Publicar aviso</button></div>
+        </form>
+    </dialog>
+
+    <dialog id="player-report-dialog" class="fichaje-dialog" aria-labelledby="player-report-title">
+        <form id="player-report-form" class="fichaje-form fichaje-form-compact">
+            <div class="fichaje-dialog-heading"><div><p class="fichajes-eyebrow">COMUNIDAD SEGURA</p><h2 id="player-report-title">Reportar perfil</h2><p>El equipo de La Bombonerita revisará el reporte.</p></div><button type="button" class="dialog-close" data-close-dialog="player-report-dialog" aria-label="Cerrar">×</button></div>
+            <input type="hidden" id="report-player-id">
+            <label>Motivo<select id="report-reason" required><option value="contacto_incorrecto">Contacto incorrecto</option><option value="contenido_inapropiado">Contenido inapropiado</option><option value="perfil_falso">Parece un perfil falso</option><option value="otro">Otro</option></select></label>
+            <label>Detalle opcional<textarea id="report-details" maxlength="240" rows="3"></textarea></label>
+            <div class="fichaje-form-actions"><button type="button" class="btn btn-secondary" data-close-dialog="player-report-dialog">Cancelar</button><button type="submit" class="btn btn-primary">Enviar reporte</button></div>
+        </form>
+    </dialog>
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+    <footer class="footer"><div class="footer-content">
+        <p><strong>La Bombonerita Fútbol Club</strong> · Canchas, Quinchos y Comunidad Deportiva</p>
+        <p>Salta Capital, Argentina · Consultas: +54 387 4797240</p><p class="footer-sub">© 2026 Todos los derechos reservados.</p>
+    </div></footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
