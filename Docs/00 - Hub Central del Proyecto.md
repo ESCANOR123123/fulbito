@@ -20,6 +20,7 @@ graph TD
     HUB --> P14["14 - Auditoria Nuevas Ideas y Stack Moderno"]
     HUB --> P15["15 - Autenticación y Reservas por Cuenta"]
     HUB --> P16["16 - Auditoría de Tecnologías y Persistencia"]
+    HUB --> P17["17 - Configuración de Correos Transaccionales"]
     
     P3 --> T1["05 - Guia Test Etapa 1"]
     P3 --> T2["06 - Guia Test Etapa 2"]
@@ -84,8 +85,8 @@ El desarrollo avanza bajo el criterio estricto de **etapa probada y auditada al 
   - **Etapa 2: Mejora de Datos y UX** ✅ *Completada* — Migración a `fields.json`, motor `IndexedDB`, validación regex argentina (+54 9), toasts no intrusivos y modales accesibles.
   - **Etapa 3: Panel Admin Básico** ✅ *Completada* — Navegación protegida con clave, CRUD de canchas, bloqueo de horarios por mantenimiento y exportación a CSV.
   - **Etapa 4: Servidor Express y Vitrina Comercial** ✅ *Completada* — Express, landing comercial y reservas.
-  - **Etapa 5: Módulo de Fichaje Comunitario** ⏳ *En implementación* — Catálogo, pizarra y moderación migrados a React; migración 003 lista. Falta completar pruebas funcionales y multiusuario.
-  - **Etapa 6: Notificaciones y Recordatorios** ⏳ *Planificada* — Avisos automáticos para evitar ausencias.
+  - **Etapa 5: Módulo de Fichaje Comunitario** ✅ *Completada* — Catálogo, pizarra, moderación y pruebas entre cuentas confirmadas.
+  - **Etapa 6: Notificaciones y Recordatorios** ⏳ *En implementación* — WhatsApp ya disponible; migración y función de correo aplicadas/desplegadas. Falta configurar Resend, Vault y Cron, y probar entregas.
   - **Etapa 7: Pagos y Señas Online** ⏳ *Planificada* — Integración con MercadoPago.
 
 ---
@@ -126,4 +127,5 @@ Cada etapa cuenta con su guía de pruebas, casos Happy Path, casos Edge y métri
 - [[14 - Auditoria de Nuevas Funcionalidades y Migracion a Stack Moderno]]
 - [[15 - Autenticacion y Reservas por Cuenta]]
 - [[16 - Auditoria de Tecnologias y Persistencia]]
+- [[17 - Configuracion de Correos Transaccionales]]
 - [[14 - Auditoria de Nuevas Funcionalidades y Migracion a Stack Moderno]]: arquitectura vigente y auditoría del retorno de acceso admin.

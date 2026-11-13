@@ -69,14 +69,14 @@ La vista original de esta etapa usaba acceso local; fue reemplazada el 2026-10-2
 
 ---
 
-## Etapa 5: Módulo de "Fichaje" - Mercado de Jugadores (En implementación)
+## Etapa 5: Módulo de "Fichaje" - Mercado de Jugadores ✅ COMPLETADA
 **Objetivo**: Conectar jugadores libres con equipos que necesitan refuerzos ("Nos falta uno").
 
 **Dependencias previas**: activar Supabase y comprobar Auth/reservas; trasladar canchas y bloqueos desde almacenamiento local a PostgreSQL. Fichajes requiere datos compartidos y no debe implementarse con IndexedDB/localStorage como fuente principal.
 
 **Stack vigente**: Express + Supabase Auth/PostgreSQL; la landing, el turnero, el panel administrativo y Fichajes público viven en React 19 + Vite + Tailwind dentro de `frontend/`. `/v1` conserva la versión Vanilla como respaldo histórico.
 
-**Estado al 2026-10-30**: catálogo, filtros, perfiles, reportes y pizarra urgente están migrados a React en `frontend/src/Fichajes.jsx`. La ruta `/fichajes` usa la app React; `/v1/fichajes.html` queda como respaldo histórico. La migración 003 y el panel de moderación fueron confirmados como listos por el usuario. La etapa sigue abierta hasta completar las pruebas funcionales y de aislamiento entre cuentas de `Docs/13`.
+**Estado al 2026-11-06**: catálogo, filtros, perfiles, reportes y pizarra urgente están migrados a React en `frontend/src/Fichajes.jsx`. La ruta `/fichajes` usa la app React; `/v1/fichajes.html` queda como respaldo histórico. La migración 003, el panel de moderación y las pruebas funcionales/de aislamiento entre cuentas fueron confirmados como listos por el usuario.
 
 ### Tareas
 - [x] Formularios de CV Deportivo y avisos urgentes con autor autenticado (posición, nivel, disponibilidad, sede, bio y contacto)
@@ -85,17 +85,19 @@ La vista original de esta etapa usaba acceso local; fue reemplazada el 2026-10-2
 - [x] Gestión de CV propio mediante cuenta (Activo / En Pausa / Fichado)
 - [x] Pizarra de avisos vinculada a una reserva confirmada y con vencimiento automático
 - [x] Moderación y gestión de fichajes desde el Panel de Administración React (requiere migración 003)
-- [ ] RLS y pruebas entre cuentas para confirmar aislamiento de edición y moderación
+- [x] RLS y pruebas entre cuentas para confirmar aislamiento de edición y moderación (confirmadas por el usuario)
 
 ---
 
-## Etapa 6: Notificaciones y Recordatorios (Planificada)
+## Etapa 6: Notificaciones y Recordatorios (En implementación)
 **Objetivo**: Reducir ausencias y no-shows
 ### Tareas
-- [ ] Recordatorio 24h antes
-- [ ] Recordatorio 2h antes
-- [ ] Mensaje de confirmación rápido por WhatsApp
-- [ ] Email de confirmación opcional
+- [ ] Recordatorio 24h antes (cola y función desplegadas; falta activar Cron y validar envío)
+- [ ] Recordatorio 2h antes (cola y función desplegadas; falta activar Cron y validar envío)
+- [x] Confirmación rápida por WhatsApp (ya existente)
+- [ ] Email de confirmación (función desplegada; falta configurar proveedor y validar envío)
+
+**Estado técnico al 2026-11-13**: migración `004` aplicada y Edge Function desplegada según el usuario. Falta verificar el dominio remitente en Resend, cargar secretos, guardar credenciales internas en Vault, ejecutar el SQL de Supabase Cron y comprobar entregas. El enlace de WhatsApp requiere que el usuario pulse “Enviar”; WhatsApp no permite enviar mensajes automáticamente desde el navegador.
 
 ---
 

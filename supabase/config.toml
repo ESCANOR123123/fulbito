@@ -1,0 +1,4 @@
+project_id = "turnoscanchas"
+
+[functions.send-booking-emails]
+verify_jwt = false

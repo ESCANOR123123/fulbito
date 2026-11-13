@@ -517,3 +517,25 @@
 - No se pudo comprobar la interfaz con servidor local: los puertos 5173 y 3000 no estaban disponibles durante la revisión.
 - Pendiente ejecutar los casos manuales de `Docs/13`, en particular flujos reales de formularios y aislamiento RLS entre dos cuentas.
 
+## 2026-11-13 - Cierre de Etapa 5 e inicio de Etapa 6
+
+### Cambio
+- El usuario confirmó que probó Fichajes, incluidas las pruebas entre cuentas; se marca Etapa 5 como completada en el roadmap y el Hub Central.
+- Se inició la rama `feat/etapa6-notificaciones` para trabajar en notificaciones sin mezclar cambios con `main`.
+- Se confirmó con el usuario que la acción de WhatsApp ya existe; no requiere trabajo adicional en esta etapa.
+- Se actualizó Etapa 6: quedan pendientes recordatorios automáticos de 24 h y 2 h y el envío de confirmación por correo.
+
+### Verificación
+- No ejecutada en esta sesión.
+
+## 2026-11-13 - Preparación de envío de correos de reservas
+
+### Cambio
+- Se agregó la migración `004_booking_email_notifications.sql`: crea una cola privada, genera confirmaciones y recordatorios de 24 h/2 h al reservar, elimina pendientes al cancelar y limita reintentos.
+- Se creó la Edge Function `send-booking-emails` para enviar la cola mediante Resend, más un SQL separado para programarla con Supabase Cron y secretos en Vault.
+- Se instaló Supabase CLI 3 como dependencia de desarrollo del proyecto.
+- Se agregó la guía `Docs/17 - Configuracion de Correos Transaccionales.md` con despliegue y comprobaciones.
+
+### Pendiente
+- El usuario confirmó que aplicó la migración 004 y desplegó la función. Falta configurar el dominio y secretos de Resend, registrar los secretos internos en Vault, activar Cron y ejecutar las pruebas de entrega.
+
