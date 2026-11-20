@@ -783,3 +783,25 @@
 - `git diff --check`: sin errores de formato.
 - No se ejecutó un despliegue de Vercel.
 
+## 2026-11-20 - Alineación del build con el directorio de Vercel
+
+### Cambio
+- Vite genera la compilación en `dist/` en la raíz, que es el directorio configurado para Vercel.
+- Express sirve esa misma salida cuando existe; `/v1` y los archivos públicos mantienen su ruta.
+- Se ignora `dist/` generado en la raíz para no versionar artefactos de build.
+
+### Archivos afectados
+- `vite.config.js`
+- `server.js`
+- `.gitignore`
+- `vercel.json`
+- `Docs/14 - Auditoria de Nuevas Funcionalidades y Migracion a Stack Moderno.md`
+- `Docs/16 - Auditoria de Tecnologias y Persistencia.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; se confirmó `dist/index.html` en la raíz.
+- `git diff --check`: sin errores de formato.
+- Vite mantiene el aviso de chunk JavaScript mayor a 500 kB.
+- No se ejecutó un despliegue de Vercel.
+

@@ -6,7 +6,7 @@ module.exports = defineConfig({
   plugins: [tailwindcss()],
   root: 'frontend',
   build: {
-    outDir: 'dist',
+    outDir: '../dist',
     emptyOutDir: true,
   },
   server: {

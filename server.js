@@ -5,12 +5,12 @@ const fs = require('fs');
 const app = express();
 const PORT = 3000;
 
-// Servir la build moderna de React (frontend/dist) si está disponible, o fallback a public
-const distPath = path.join(__dirname, 'frontend', 'dist');
+// Servir la build moderna de React (dist) si está disponible, o fallback a public
+const distPath = path.join(__dirname, 'dist');
 const publicPath = path.join(__dirname, 'public');
 
 if (fs.existsSync(distPath)) {
-    console.log('⚡ Sirviendo aplicación moderna React desde frontend/dist');
+    console.log('⚡ Sirviendo aplicación moderna React desde dist');
     app.use(express.static(distPath));
     app.get('/fichajes', (req, res) => res.sendFile(path.join(distPath, 'index.html')));
     app.use(express.static(publicPath));

@@ -79,7 +79,7 @@ El stack inicial (Vanilla HTML/CSS/JS + IndexedDB) cumplió con creces el objeti
 Esta auditoría se redactó como una evolución futura. El 2026-10-23 se decidió iniciar la migración de forma gradual, conservando Express, Supabase, los datos y las políticas RLS existentes. Al 2026-10-29, React gestiona landing, reservas y panel administrativo; `/v1` conserva Fichajes público y sirve como respaldo temporal.
 
 ### 3.1. Frontend en transición: **React 19 + Vite + Tailwind + Express**
-- `frontend/` aloja el nuevo cliente React; Vite compila a `frontend/dist` y Express lo sirve cuando la build está disponible.
+- `frontend/` aloja el nuevo cliente React; Vite compila a `dist/` en la raíz y Express lo sirve cuando la build está disponible.
 - Landing, catálogo de canchas, reservas de clientes, acceso a cuenta e historial se migran primero.
 - Supabase Auth y PostgreSQL siguen siendo la fuente compartida; la migración no cambia tablas, claves ni políticas RLS.
 - La versión Vanilla vive en `public/` y queda accesible por `/v1`; `/fichajes` y su experiencia pública siguen usando esa página durante esta fase.

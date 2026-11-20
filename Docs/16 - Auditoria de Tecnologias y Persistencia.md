@@ -29,7 +29,7 @@
 | Tecnología | Uso |
 |---|---|
 | Node.js | Runtime del servidor y scripts de desarrollo. No se fija una versión en `package.json`. |
-| Express 5 | Sirve `frontend/dist`, recursos públicos, `/v1` y `/fichajes`. |
+| Express 5 | Sirve `dist/`, recursos públicos, `/v1` y `/fichajes`. |
 | React 19 / React DOM | UI moderna, reservas, autenticación y panel admin. |
 | Vite 8 | Servidor de desarrollo, proxy local y build de React. |
 | Tailwind CSS 4 + `@tailwindcss/vite` | Integración de estilos con Vite. El código visible usa sobre todo clases propias y CSS escrito en `styles.css`/`admin.css`. |
@@ -71,7 +71,7 @@ Estos datos locales no se importan automáticamente a Supabase. La documentació
 ## Herramientas y comandos
 
 - `npm run dev`: inicia Express y Vite para desarrollo.
-- `npm run build`: compila React a `frontend/dist`.
+- `npm run build`: compila React a `dist/` en la raíz.
 - `npm start`: inicia Express para servir la build si existe o el sitio estático en caso contrario.
 - `npm test`: no ejecuta pruebas; el script actual termina con `Error: no test specified`.
 - `Docs/` y `.obsidian/`: documentación y configuración de la bóveda, no dependencias de runtime de la app.
