@@ -805,3 +805,19 @@
 - Vite mantiene el aviso de chunk JavaScript mayor a 500 kB.
 - No se ejecutó un despliegue de Vercel.
 
+## 2026-11-20 - Rutas de React en Vercel
+
+### Cambio
+- Se agregaron rewrites de `/login`, `/fichajes` y `/perfil` hacia `index.html`, para que Vercel cargue la app React al abrir o actualizar esas rutas directamente.
+- El contenido de esas pantallas ya forma parte del bundle generado por Vite; Express no es necesario para servirlas en el despliegue estático.
+
+### Archivos afectados
+- `vercel.json`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; genera `dist/index.html` y los bundles de React.
+- Se comprobó que `/login`, `/fichajes` y `/perfil` estén declaradas como rewrites a `index.html`.
+- `git diff --check`: sin errores de formato.
+- Vite mantiene el aviso de chunk JavaScript mayor a 500 kB; no se probó un despliegue real en Vercel.
+
