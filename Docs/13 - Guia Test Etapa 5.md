@@ -9,12 +9,12 @@
 ---
 
 ## Cómo Probar
-1. La migración 003 ya fue aplicada (confirmado por el usuario). Si el panel informa que faltan tablas, verificar el proyecto y las migraciones antes de volver a ejecutarla.
+1. La migración 003 ya fue aplicada (confirmado por el usuario). Aplicar también `005_fichajes_perfiles_ampliados.sql` y luego `007_fix_fichajes_public_reviews_policy.sql` en el SQL Editor. La 007 reemplaza la política de lectura pública de opiniones para que no consulte directamente columnas de moderación vedadas al rol `anon`.
 2. Verificar que la cuenta de administración tenga rol `admin` en `public.profiles`.
 3. En desarrollo, iniciar con `npm run dev` y abrir la URL que muestre Vite (por defecto `http://localhost:5173/fichajes`). En local integrado, ejecutar `npm run build`, luego `npm start` y abrir `http://localhost:3000/fichajes`.
 4. Confirmar que aparece la página React con el catálogo de jugadores y la pizarra de avisos. `/v1/fichajes.html` conserva la versión Vanilla de respaldo.
 
-La migración 003 y el panel de moderación se confirmaron listos el 2026-10-30. No marcar la etapa como completa hasta ejecutar los casos de esta guía con al menos dos cuentas distintas y verificar permisos RLS.
+La migración 003 y el panel de moderación se confirmaron listos el 2026-10-30. No marcar la etapa como completa hasta ejecutar los casos de esta guía con al menos dos cuentas distintas y verificar permisos RLS. Para verificar la lectura pública, abrir `/fichajes` sin iniciar sesión: deben cargar los perfiles aprobados y sus opiniones sin errores `42501` en consola. Los perfiles suspendidos, pendientes o sin consentimiento no deben publicar opiniones visibles.
 
 ---
 
@@ -32,6 +32,7 @@ La migración 003 y el panel de moderación se confirmaron listos el 2026-10-30.
 | **8** | Clic en `[+ Publicar Aviso Urgente]` con una reserva futura propia | Se abre formulario rápido con cancha, fecha y hora precargadas desde esa reserva. |
 | **9** | Publicar aviso: *"Falta 1 para hoy 21:00 hs"* | El aviso aparece destacado con estilo visual de urgencia en la parte superior del módulo. |
 | **10** | Clic en `[🙋 Postularme como Refuerzo]` en el aviso urgente | Abre WhatsApp hacia el número del capitán con el mensaje: *"¡Hola! Vi en la pizarra de La Bombonerita que te falta un jugador para las 21:00... ¿Sigue libre el lugar?"*. |
+| **11** | Con una cuenta verificada, abrir un perfil ajeno, elegir estrellas y publicar un comentario de 10 a 500 caracteres | El botón muestra el estado de envío y luego aparece una confirmación visible dentro del perfil; la opinión y el promedio se actualizan. Al reabrir el perfil, la opinión permanece guardada. |
 
 ---
 
@@ -45,6 +46,8 @@ La migración 003 y el panel de moderación se confirmaron listos el 2026-10-30.
 | **E4** | Exceder los 140 caracteres en la biografía deportiva | El contador visual advierte del límite y el textarea restringe caracteres extra (`maxlength="140"`). |
 | **E5** | Aviso urgente cuyo horario de partido ya pasó (expiración TTL) | El sistema filtra y no muestra avisos vencidos de forma automática. |
 | **E6** | Consultar desde otro navegador/dispositivo con cuentas distintas | Los datos aprobados se comparten; cada cuenta solo administra sus propios perfiles/avisos. |
+| **E7** | Intentar publicar opinión con correo sin verificar o forzar un error de Supabase | Aparece un mensaje visible junto al formulario dentro del perfil y el botón deja el estado de carga para permitir corregir o reintentar. |
+| **E8** | Publicar la primera opinión y luego editarla desde la misma cuenta | La primera operación inserta; la siguiente actualiza solo estrellas y comentario, sin requerir un permiso global de `UPDATE` sobre la tabla. |
 
 ---
 

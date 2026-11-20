@@ -27,6 +27,10 @@ where id = (select id from auth.users where email = 'admin@tudominio.com');
 
 Los permisos se aplican con Row Level Security: cada cliente puede consultar y cancelar sus propias reservas; el administrador puede consultarlas y cancelarlas todas. La tabla `booking_slots` solo expone cancha, fecha y hora ocupada, nunca nombre ni teléfono. React muestra el panel admin en la misma aplicación después de leer `profiles.role`; el acceso directo `/login?...#admin` abre el login y ya no salta a `/v1/#admin`.
 
+## Fotos de perfil
+
+Para habilitar la foto de perfil en `/perfil`, ejecutar `supabase/migrations/006_profile_photos.sql` en el SQL Editor después de las migraciones existentes. La migración crea el bucket privado `profile-photos` y permite que cada cuenta lea, cargue, reemplace y borre únicamente archivos dentro de su propia carpeta. Se aceptan JPG, PNG y WebP de hasta 5 MB. Supabase Auth conserva la ruta del archivo en los metadatos de la cuenta; la interfaz genera URLs firmadas temporales para mostrar la imagen. Hasta aplicar la migración, la carga no estará habilitada en el proyecto Supabase.
+
 ## Reservas antiguas
 
 Las reservas guardadas anteriormente en IndexedDB o localStorage permanecen en ese navegador, pero quedan ocultas y no se importan automáticamente. No existe una prueba confiable de que quien inicia sesión sea el titular del teléfono guardado. La migración queda pendiente hasta diseñar una verificación verificable del teléfono, mostrar una vista previa, resolver duplicados y confirmar el resultado antes de eliminar cualquier copia local.

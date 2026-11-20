@@ -76,6 +76,17 @@ Tras la consulta directa con el usuario para definir los parámetros de la vitri
 
 > **Actualización posterior:** Esta directriz documenta el alcance de la etapa inicial de auditoría. Luego el usuario autorizó cambios de implementación para autenticación/reservas y ahora continúa con el plan comercial. La decisión vigente de stack y secuencia está en [[03 - Etapas y Roadmap]]; esta nota conserva el historial, no restringe el trabajo autorizado posteriormente.
 
+## Reglas operativas vigentes (2026-11-13)
+
+- Trabajar cada tarea específica en una rama propia; no implementar directamente en `main`. Continuar en la rama activa cuando sea la misma tarea y crear otra para un trabajo distinto.
+- Consultar y recibir aprobación explícita antes de cada commit y antes de cada push. La aprobación de una acción no autoriza la otra.
+- Documentar cada cambio funcional o técnico en [[04 - Log Tecnico y Cambios]]. Actualizar además roadmap, especificación o guía cuando cambie su contenido.
+- No descartar ni sobrescribir cambios locales existentes; revisar rama y estado del árbol antes de editar.
+- Mantener el alcance solicitado, evitar cambios ajenos y no declarar verificaciones que no se realizaron.
+- No guardar secretos, claves privadas ni `service_role` en el repositorio o frontend.
+
+Las instrucciones persistentes para agentes y colaboradores están en el archivo raíz `AGENTS.md`.
+
 ---
 **Navegación del Grafo:**
 - 🏠 Hub Principal: [[00 - Hub Central del Proyecto]]

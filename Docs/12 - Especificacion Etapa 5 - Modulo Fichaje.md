@@ -181,3 +181,13 @@ El panel accesible vía `[👤 Iniciar Sesión]` incorpora una 4ta pestaña:
 - 💡 Especificación Vitrina Comercial: [[10 - Especificacion Etapa 4 - Vitrina Comercial]]
 - 🧪 Test Etapa 4: [[11 - Guia Test Etapa 4]]
 - 📜 Registro Técnico: [[04 - Log Tecnico y Cambios]]
+
+## Ampliación de perfiles — 2026-11-13
+
+- Cada tarjeta abre un perfil completo con foto de perfil, foto de cuerpo completo, presentación de hasta 600 caracteres, disponibilidad, posición, enlaces a video y redes, contacto y opiniones.
+- La persona dueña del perfil puede cargar JPG, PNG o WebP de hasta 5 MB. Las fotos del jugador se guardan en el bucket público `player-photos`; la escritura y reemplazo quedan limitados a la carpeta de su cuenta.
+- Los enlaces admitidos son HTTPS de YouTube, Instagram y TikTok. El video se enlaza desde el servicio de origen, no se almacena como archivo.
+- Las cuentas con correo verificado pueden publicar o editar una opinión (calificación de 1 a 5 y comentario de 10 a 500 caracteres) por perfil. No se puede calificar el propio perfil.
+- La calificación se elige con cinco estrellas mediante radios nativos accesibles por teclado; se mantiene un puntaje entero de 1 a 5 y se informa la selección en texto.
+- Los cambios de fotos y enlaces vuelven a poner el perfil en revisión. Las opiniones solo aparecen cuando el perfil está activo y aprobado.
+- Las migraciones `005_fichajes_perfiles_ampliados.sql` y `007_fix_fichajes_public_reviews_policy.sql` deben estar aplicadas en Supabase antes de habilitar estas funciones. La 007 es la corrección de permisos para leer opiniones públicas sin otorgar al rol `anon` acceso a columnas internas de moderación.

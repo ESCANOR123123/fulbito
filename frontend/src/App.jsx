@@ -7,6 +7,9 @@ import AdminPanel from './AdminPanel.jsx';
 import Fichajes from './Fichajes.jsx';
 
 const TIMES = Array.from({ length: 14 }, (_, index) => `${String(index + 9).padStart(2, '0')}:00`);
+const PROFILE_PHOTO_BUCKET = 'profile-photos';
+const PROFILE_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
+const SUPABASE_CLIENT_SLOT = Symbol.for('la-bombonerita.supabase-client');
 const DEFAULT_FIELDS = [
   { id: 1, name: 'Cancha 1', complex: 'Sede Central', surface_type: 'Césped Sintético', capacity: '5 vs 5', price: 5000, active: true },
   { id: 2, name: 'Cancha 2', complex: 'Sede Central', surface_type: 'Césped Natural', capacity: '7 vs 7', price: 7000, active: true },
@@ -17,7 +20,11 @@ const DEFAULT_FIELDS = [
 function makeSupabase() {
   const config = window.SUPABASE_CONFIG;
   if (!config?.url || !config?.publishableKey) return null;
-  return createClient(config.url, config.publishableKey);
+  const existing = window[SUPABASE_CLIENT_SLOT];
+  if (existing?.url === config.url && existing?.publishableKey === config.publishableKey) return existing.client;
+  const client = createClient(config.url, config.publishableKey);
+  window[SUPABASE_CLIENT_SLOT] = { url:config.url, publishableKey:config.publishableKey, client };
+  return client;
 }
 
 function formatMoney(amount) {
@@ -41,15 +48,29 @@ function BrandMark() {
 }
 
 function Header({ user, isAdmin, onLogin, onSignOut, isFichajes = false }) {
-  const target = hash => isFichajes ? `/${hash}` : hash;
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButton = useRef(null);
+  const target = hash => isFichajes || window.location.pathname !== '/' ? `/${hash}` : hash;
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const onKeyDown = event => {
+      if (event.key === 'Escape') { setMenuOpen(false); menuButton.current?.focus(); }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [menuOpen]);
+  const closeMenu = () => setMenuOpen(false);
   return <header className="react-header">
     <div className="react-header-inner">
       <a className="react-brand" href={isFichajes ? '/' : '#inicio'} aria-label="La Bombonerita, inicio"><BrandMark/><span><strong>LA BOMBONERITA</strong><small>FÚTBOL CLUB · SALTA</small></span></a>
-      <nav className="react-nav" aria-label="Navegación principal">
-        <a href={target('#complejo')}>El complejo</a><a href={target('#reservas')}>Reservas</a><a href="/fichajes">Fichajes</a><a href={target('#ubicacion')}>Ubicación</a>
-        {user && !isAdmin && <a href={target('#mis-reservas')}>Mis reservas</a>}
-        {isAdmin && <a href="/#admin">Administración</a>}
-        {user ? <button className="react-nav-account" onClick={onSignOut}>Cerrar sesión</button> : <button className="react-nav-account" onClick={onLogin}>Iniciar sesión <span aria-hidden="true">↗</span></button>}
+      <button ref={menuButton} className="react-menu-toggle" type="button" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={menuOpen} aria-controls="primary-navigation" onClick={() => setMenuOpen(open => !open)}>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d={menuOpen ? 'M5 5l14 14M19 5 5 19' : 'M3 6h18M3 12h18M3 18h18'} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
+      </button>
+      <nav id="primary-navigation" className={`react-nav${menuOpen ? ' is-open' : ''}`} aria-label="Navegación principal">
+        <a href={target('#complejo')} onClick={closeMenu}>El complejo</a><a href={target('#reservas')} onClick={closeMenu}>Reservas</a><a href="/fichajes" onClick={closeMenu}>Fichajes</a><a href={target('#ubicacion')} onClick={closeMenu}>Ubicación</a>
+        {user && !isAdmin && <a href="/perfil" onClick={closeMenu}>Mi perfil</a>}
+        {isAdmin && <a href="/#admin" onClick={closeMenu}>Administración</a>}
+        {user ? <button className="react-nav-account" onClick={() => { closeMenu(); onSignOut(); }}>Cerrar sesión</button> : <button className="react-nav-account" onClick={() => { closeMenu(); onLogin(); }}>Iniciar sesión <span aria-hidden="true">↗</span></button>}
       </nav>
     </div>
   </header>;
@@ -114,14 +135,171 @@ function Reservation({ fields, selected, onSelect, date, setDate, time, setTime,
 }
 
 function MyBookings({ bookings, onCancel }) {
-  return <section id="mis-reservas" className="react-my-bookings"><div className="react-section-heading"><p>TU CUENTA</p><h2>Mis reservas.</h2></div>{bookings.length ? <div className="react-booking-list">{bookings.map(item => <article key={item.id}><div><span>{item.field_name} · {item.complex}</span><strong>{formatDate(item.booking_date)} · {String(item.start_time).slice(0,5)}</strong><small>{item.player_name} · {item.phone}</small></div><button onClick={() => onCancel(item.id)}>Cancelar</button></article>)}</div> : <p className="react-empty">Todavía no tenés reservas. Elegí una cancha para empezar.</p>}</section>;
+  return <section className="react-account-section react-my-bookings"><div className="react-section-heading"><p>TU CUENTA</p><h2>Mis reservas.</h2></div>{bookings.length ? <div className="react-booking-list">{bookings.map(item => <article key={item.id}><div><span>{item.field_name} · {item.complex}</span><strong>{formatDate(item.booking_date)} · {String(item.start_time).slice(0,5)}</strong><small>{item.player_name} · {item.phone}</small><small className="react-booking-status">Confirmada</small></div><button onClick={() => onCancel(item.id)}>Cancelar</button></article>)}</div> : <p className="react-empty">Todavía no tenés reservas. Elegí una cancha para empezar.</p>}</section>;
+}
+
+const PLAYER_POSITIONS = { arquero:'Arquero', defensor:'Defensor', mediocampista:'Mediocampista', delantero:'Delantero' };
+const PLAYER_DAYS = [['lunes','Lun'],['martes','Mar'],['miercoles','Mié'],['jueves','Jue'],['viernes','Vie'],['sabado','Sáb'],['domingo','Dom']];
+const EMPTY_PLAYER = { public_name:'', phone:'', primary_position:'arquero', secondary_position:'', preferred_foot:'diestro', level:'recreativo', available_days:[], time_slot:'noche', preferred_venue:'central', bio:'', contact_consent:false };
+
+function AccountPlayerProfile({ client, user, initialPlayer, initialError }) {
+  const [player, setPlayer] = useState(initialPlayer);
+  const [form, setForm] = useState(EMPTY_PLAYER);
+  const [editing, setEditing] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(initialError || '');
+  const load = useCallback(async () => {
+    setLoading(true); setError('');
+    const { data, error:loadError } = await client.from('player_profiles').select('*').eq('owner_user_id', user.id).maybeSingle();
+    if (loadError) setError(`No se pudo cargar tu perfil de jugador: ${loadError.message}`);
+    else setPlayer(data || null);
+    setLoading(false);
+  }, [client, user.id]);
+  const edit = () => { setForm(player ? { ...EMPTY_PLAYER, ...player, contact_consent:Boolean(player.contact_consent_at) } : EMPTY_PLAYER); setEditing(true); setError(''); setMessage(''); };
+  const save = async event => {
+    event.preventDefault(); setError(''); setMessage('');
+    if (!validPhone(form.phone)) return setError('Ingresá un número de WhatsApp argentino válido.');
+    if (!form.available_days.length) return setError('Seleccioná al menos un día disponible.');
+    if (form.secondary_position === form.primary_position) return setError('Elegí una posición secundaria distinta o dejala en ninguna.');
+    if (!player) return setError('Creá tu perfil desde Fichajes para poder administrarlo desde acá.');
+    setBusy(true);
+    const payload = { public_name:form.public_name.trim(), phone:form.phone.trim(), contact_consent_at:new Date().toISOString(), primary_position:form.primary_position, secondary_position:form.secondary_position || null, preferred_foot:form.preferred_foot, level:form.level, available_days:form.available_days, time_slot:form.time_slot, preferred_venue:form.preferred_venue, bio:form.bio.trim() };
+    const { error:saveError } = await client.from('player_profiles').update(payload).eq('id', player.id);
+    setBusy(false);
+    if (saveError) setError(saveError.message || 'No se pudo guardar el perfil.');
+    else { setEditing(false); setMessage('Perfil actualizado y enviado a revisión.'); await load(); }
+  };
+  const changeStatus = async status => {
+    setError(''); setMessage(''); setBusy(true);
+    const { error:statusError } = await client.from('player_profiles').update({ status }).eq('id', player.id);
+    setBusy(false);
+    if (statusError) setError('No se pudo actualizar el estado del perfil.');
+    else { setMessage(status === 'active' ? 'Perfil disponible nuevamente.' : status === 'paused' ? 'Perfil en pausa.' : 'Perfil marcado como fichado.'); await load(); }
+  };
+  const deleteProfile = async () => {
+    if (!window.confirm('¿Eliminar tu perfil de jugador? Se quitará del mercado y no se podrá recuperar.')) return;
+    setBusy(true);
+    const { error:deleteError } = await client.from('player_profiles').delete().eq('id', player.id);
+    setBusy(false);
+    if (deleteError) setError('No se pudo eliminar el perfil.');
+    else { setPlayer(null); setMessage('Perfil de jugador eliminado.'); }
+  };
+  return <section className="react-account-section react-player-profile-section"><div className="react-section-heading"><p>FICHAJES</p><h2>Perfil de jugador.</h2></div>
+    {message && <p className="react-notice success" role="status">{message}</p>}{error && <p className="react-notice error" role="alert">{error}</p>}
+    {loading ? <p className="react-empty">Cargando perfil…</p> : error ? <button className="fichajes-secondary" onClick={load}>Volver a intentar</button> : player ? <><div className="react-player-account"><div><span className="react-account-label">{player.public_name}</span><strong>{{active:'Disponible',paused:'En pausa',signed:'Fichado'}[player.status] || player.status} · {{pending:'En revisión',approved:'Publicado',suspended:'Suspendido',removed:'Dado de baja'}[player.moderation_status] || player.moderation_status}</strong></div>
+      {!editing && !['suspended','removed'].includes(player.moderation_status) && <div className="react-account-actions"><button className="fichajes-secondary" onClick={edit}>Editar perfil</button>{player.status === 'active' ? <><button className="fichajes-secondary" disabled={busy} onClick={() => changeStatus('paused')}>Pausar</button><button className="fichajes-secondary" disabled={busy} onClick={() => changeStatus('signed')}>Marcar como fichado</button></> : <button className="fichajes-secondary" disabled={busy} onClick={() => changeStatus('active')}>Volver a activar</button>}<button className="player-delete-link" disabled={busy} onClick={deleteProfile}>Eliminar perfil</button></div>}
+    </div>{!editing && ['suspended','removed'].includes(player.moderation_status) && <p className="react-empty">Este perfil está {player.moderation_status === 'suspended' ? 'suspendido' : 'dado de baja'} y no se puede editar.</p>}
+    {editing && <form className="fichaje-form react-player-edit" onSubmit={save}><h3>Editar datos del jugador</h3><div className="fichaje-form-grid">
+      <label>Nombre o apodo<input value={form.public_name} onChange={e=>setForm({...form,public_name:e.target.value})} minLength="3" maxLength="30" required/></label><label>WhatsApp<input type="tel" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} required/></label>
+      <label>Posición principal<select value={form.primary_position} onChange={e=>setForm({...form,primary_position:e.target.value})}>{Object.entries(PLAYER_POSITIONS).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></label><label>Posición secundaria<select value={form.secondary_position} onChange={e=>setForm({...form,secondary_position:e.target.value})}><option value="">Ninguna</option>{Object.entries(PLAYER_POSITIONS).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></label>
+      <fieldset><legend>Pierna hábil</legend><div className="fichaje-choice-row">{['diestro','zurdo','ambidiestro'].map(value=><label key={value}><input type="radio" checked={form.preferred_foot===value} onChange={()=>setForm({...form,preferred_foot:value})}/>{value}</label>)}</div></fieldset><label>Nivel<select value={form.level} onChange={e=>setForm({...form,level:e.target.value})}>{['recreativo','intermedio','competitivo'].map(value=><option key={value} value={value}>{value}</option>)}</select></label>
+      <fieldset className="availability-fieldset"><legend>Días disponibles</legend><div className="availability-days">{PLAYER_DAYS.map(([key,label])=><label key={key}><input type="checkbox" checked={form.available_days.includes(key)} onChange={e=>setForm({...form,available_days:e.target.checked?[...form.available_days,key]:form.available_days.filter(day=>day!==key)})}/>{label}</label>)}</div></fieldset>
+      <label>Disponibilidad horaria<select value={form.time_slot} onChange={e=>setForm({...form,time_slot:e.target.value})}><option value="tarde">Tarde · 14 a 18 h</option><option value="noche">Noche · 18 a 23 h</option><option value="indistinto">Cualquier horario</option></select></label><label>Sede preferida<select value={form.preferred_venue} onChange={e=>setForm({...form,preferred_venue:e.target.value})}><option value="central">Sede Central</option><option value="norte">Sede Norte</option><option value="indistinta">Indistinta</option></select></label>
+      <label className="fichaje-bio-field">Sobre vos<textarea value={form.bio} maxLength="140" rows="3" onChange={e=>setForm({...form,bio:e.target.value})}/><small>{form.bio.length}/140</small></label></div><label className="fichaje-consent"><input type="checkbox" checked={form.contact_consent} onChange={e=>setForm({...form,contact_consent:e.target.checked})} required/><span>Acepto mostrar mi WhatsApp en el perfil para recibir propuestas.</span></label><div className="fichaje-form-actions"><button type="button" className="fichajes-secondary" onClick={()=>setEditing(false)}>Cancelar</button><button className="fichajes-primary" disabled={busy}>{busy?'Guardando…':'Guardar cambios'}</button></div></form>}
+    </> : <div className="react-player-account"><p>Todavía no tenés un perfil de jugador en Fichajes.</p><a className="react-button react-button-primary" href="/fichajes">Crear perfil en Fichajes <span aria-hidden="true">↗</span></a></div>}
+  </section>;
+}
+
+function AccountAvatar({ client, user, initials }) {
+  const fileInput = useRef(null);
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [photoMessage, setPhotoMessage] = useState('');
+  const storedPath = user?.user_metadata?.profile_photo_path;
+  const avatarPath = typeof storedPath === 'string' && user?.id && storedPath.startsWith(`${user.id}/`) ? storedPath : '';
+
+  useEffect(() => {
+    let active = true;
+    setAvatarUrl('');
+    if (!client || !avatarPath) return () => { active = false; };
+    const loadAvatar = async () => {
+      try {
+        const { data, error } = await client.storage.from(PROFILE_PHOTO_BUCKET).createSignedUrl(avatarPath, 3600);
+        if (!active) return;
+        if (error) setPhotoMessage('No se pudo cargar tu foto. Podés volver a seleccionarla.');
+        else setAvatarUrl(data.signedUrl);
+      } catch {
+        if (active) setPhotoMessage('No se pudo cargar tu foto. Podés volver a seleccionarla.');
+      }
+    };
+    loadAvatar();
+    return () => { active = false; };
+  }, [client, avatarPath]);
+
+  const uploadPhoto = async event => {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = '';
+    if (!file) return;
+    setPhotoMessage('');
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setPhotoMessage('Elegí una imagen JPG, PNG o WebP.');
+      return;
+    }
+    if (file.size > PROFILE_PHOTO_MAX_BYTES) {
+      setPhotoMessage('La imagen debe pesar menos de 5 MB.');
+      return;
+    }
+
+    setBusy(true);
+    const extension = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp' }[file.type];
+    const uploadId = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const newPath = `${user.id}/${uploadId}.${extension}`;
+    const storage = client.storage.from(PROFILE_PHOTO_BUCKET);
+    try {
+      const { error:uploadError } = await storage.upload(newPath, file, { contentType:file.type, cacheControl:'3600', upsert:false });
+      if (uploadError) throw uploadError;
+      const { error:metadataError } = await client.auth.updateUser({ data:{ profile_photo_path:newPath } });
+      if (metadataError) {
+        await storage.remove([newPath]);
+        throw metadataError;
+      }
+      const { data:signedPhoto } = await storage.createSignedUrl(newPath, 3600);
+      if (signedPhoto?.signedUrl) setAvatarUrl(signedPhoto.signedUrl);
+      let cleanupFailed = false;
+      if (avatarPath && avatarPath !== newPath) {
+        const { error:removeError } = await storage.remove([avatarPath]);
+        cleanupFailed = Boolean(removeError);
+      }
+      setPhotoMessage(cleanupFailed ? 'Foto actualizada. No pudimos borrar la imagen anterior.' : 'Foto de perfil actualizada.');
+    } catch (error) {
+      setPhotoMessage(`No se pudo guardar la foto: ${error.message || 'intentá nuevamente.'}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return <div className="react-account-photo-wrap">
+    {avatarUrl ? <img className="react-account-avatar" src={avatarUrl} alt="Foto de perfil"/> : <span className="react-account-avatar" aria-hidden="true">{initials}</span>}
+    <button className="react-account-photo-button" type="button" aria-label={busy ? 'Guardando foto de perfil' : avatarUrl ? 'Cambiar foto de perfil' : 'Agregar foto de perfil'} title={busy ? 'Guardando foto de perfil' : avatarUrl ? 'Cambiar foto de perfil' : 'Agregar foto de perfil'} disabled={busy} onClick={() => fileInput.current?.click()}>
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 8.5h3l1.5-2h7l1.5 2h3v10H4zM12 16a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5Z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/></svg>
+      {busy && <span className="react-account-photo-spinner" aria-hidden="true"/>}
+    </button>
+    <input ref={fileInput} className="react-account-photo-input" type="file" accept="image/jpeg,image/png,image/webp" aria-label="Seleccionar foto de perfil" onChange={uploadPhoto}/>
+    {photoMessage && <span className="react-account-photo-message" role="status">{photoMessage}</span>}
+  </div>;
+}
+
+function AccountPage({ client, user, profile, bookings, playerProfile, playerProfileError, onCancel, notice }) {
+  const [mobileSection, setMobileSection] = useState('reservas');
+  const displayName = profile?.full_name || user?.email || 'Mi cuenta';
+  const initials = displayName.split(/[\s@._-]+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase();
+  return <main className="react-account-page react-account-dashboard" data-mobile-section={mobileSection}><div className="react-account-heading"><div className="react-account-identity"><AccountAvatar client={client} user={user} initials={initials}/><div><p>LA BOMBONERITA · MI PERFIL</p><h1>{displayName}</h1><span>{user?.email}</span></div></div><div className="react-account-summary"><span>{bookings.length}</span><small>{bookings.length === 1 ? 'reserva confirmada' : 'reservas confirmadas'}</small></div></div>
+    {notice && <p className={`react-notice ${notice.kind}`} role="status">{notice.text}</p>}
+    <div className="react-account-tabs" role="group" aria-label="Secciones de Mi perfil">
+      <button type="button" aria-pressed={mobileSection === 'reservas'} onClick={() => setMobileSection('reservas')}>Mis reservas</button>
+      <button type="button" aria-pressed={mobileSection === 'jugador'} onClick={() => setMobileSection('jugador')}>Perfil de jugador</button>
+    </div>
+    <div className="react-account-columns"><MyBookings bookings={bookings} onCancel={onCancel}/><AccountPlayerProfile client={client} user={user} initialPlayer={playerProfile} initialError={playerProfileError}/></div>
+  </main>;
 }
 
 function Contact() {
   return <section id="ubicacion" className="react-contact"><div><p>DÓNDE JUGAMOS</p><h2>Nos vemos<br/><em>en Limache.</em></h2><span>Zona Sur · Av. Ex Combatientes de Malvinas<br/>Salta Capital, Argentina</span></div><div className="react-contact-right"><span>LUNES A DOMINGO<br/>09:00 — 00:00</span><a href="https://maps.google.com/?q=Limache+Salta+Argentina" target="_blank" rel="noreferrer">Cómo llegar <b aria-hidden="true">↗</b></a><a href="https://wa.me/543874797240" target="_blank" rel="noreferrer">+54 387 4797240</a></div></section>;
 }
 
-function AuthDialog({ client, onClose, onAuthenticated }) {
+function AuthPage({ client, onAuthenticated }) {
   const [mode, setMode] = useState(window.location.hash.includes('type=recovery') ? 'update' : 'signin');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -148,9 +326,8 @@ function AuthDialog({ client, onClose, onAuthenticated }) {
     } catch(error) { setMessage(error.message || 'No pudimos completar el acceso.'); }
     finally { setBusy(false); }
   };
-  return <div className="react-dialog-backdrop" onMouseDown={event => event.target === event.currentTarget && onClose()}><section className="react-auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+  return <main className="react-account-page react-login-page"><section className="react-auth-dialog" aria-labelledby="auth-title">
     <>
-      <button className="react-dialog-close" type="button" onClick={onClose} aria-label="Cerrar">×</button>
       <div className="react-auth-form-heading"><span className="react-auth-kicker">TU CUENTA</span><h2 id="auth-title">{mode === 'signin' ? 'Iniciá sesión' : mode === 'signup' ? 'Crear una cuenta' : mode === 'update' ? 'Elegí una contraseña nueva' : 'Recuperá tu acceso'}</h2>
       <p className="react-auth-intro">{mode === 'signin' ? 'Accedé a tus reservas y gestioná tus turnos.' : mode === 'signup' ? 'Creá tu cuenta y empezá a organizar el próximo partido.' : mode === 'update' ? 'Actualizá tu contraseña para volver a tu cuenta.' : 'Te mandamos un enlace para cambiar la contraseña.'}</p></div>
       <form onSubmit={submit}>
@@ -163,11 +340,12 @@ function AuthDialog({ client, onClose, onAuthenticated }) {
       </form>
       <div className="react-auth-actions"><button type="button" className="react-auth-mode-toggle" onClick={() => {setMode(mode === 'signin' ? 'signup':'signin');setMessage('');}}>{mode === 'signin' ? 'Crear una cuenta':'Iniciar sesión'}</button></div>
     </>
-  </section></div>;
+  </section></main>;
 }
 
 function App() {
   const client = useMemo(makeSupabase, []);
+  const path = window.location.pathname.replace(/\/$/, '') || '/';
   const mainRef = useRef(null);
   const [fields, setFields] = useState(DEFAULT_FIELDS);
   const [selected, setSelected] = useState(null);
@@ -177,7 +355,9 @@ function App() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [bookings, setBookings] = useState([]);
-  const [authOpen, setAuthOpen] = useState(window.location.hash === '#login' || window.location.hash === '#admin' || window.location.hash.includes('type=recovery') || window.location.pathname === '/login');
+  const [playerProfile, setPlayerProfile] = useState(null);
+  const [playerProfileError, setPlayerProfileError] = useState('');
+  const [authReady, setAuthReady] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [notice, setNotice] = useState(null);
   const [authError, setAuthError] = useState('');
@@ -185,6 +365,7 @@ function App() {
   const isAdmin = profile?.role === 'admin';
 
   useGSAP(() => {
+    if (path !== '/' || !mainRef.current) return;
     gsap.registerPlugin(ScrollTrigger);
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
@@ -210,34 +391,65 @@ function App() {
 
   useEffect(() => {
     let active = true;
-    if (!client) return undefined;
+    if (!client) {
+      setAuthReady(true);
+      if (path === '/perfil') window.location.replace('/login?returnTo=%2Fperfil');
+      return undefined;
+    }
     const hydrate = async session => {
       if (!active) return;
       const currentUser = session?.user || null; setUser(currentUser);
-      if (!currentUser) { setProfile(null); setBookings([]); setAuthError(''); return; }
+      if (!currentUser) {
+        setProfile(null); setBookings([]); setPlayerProfile(null); setPlayerProfileError(''); setAuthError(''); setAuthReady(true);
+        if (path === '/perfil') window.location.replace('/login?returnTo=%2Fperfil');
+        return;
+      }
       try {
-        const { data:profileData, error:profileError } = await client.from('profiles').select('id,full_name,phone,role').eq('id',currentUser.id).maybeSingle();
+        const profileRequest = client.from('profiles').select('id,full_name,phone,role').eq('id',currentUser.id).maybeSingle();
+        const bookingsRequest = path === '/login' ? null : client.from('bookings').select('*').order('booking_date').order('start_time');
+        const playerRequest = path === '/perfil' ? client.from('player_profiles').select('*').eq('owner_user_id',currentUser.id).maybeSingle() : null;
+        const [profileResult, bookingsResult, playerResult] = await Promise.all([profileRequest, bookingsRequest, playerRequest]);
+        const { data:profileData, error:profileError } = profileResult;
         if (profileError) throw profileError;
         if (!active) return;
         setProfile(profileData || null); setAuthError(profileData ? '' : 'No encontramos el perfil de esta cuenta. Revisá que exista en public.profiles.');
         if (profileData?.full_name) setForm(current => ({...current, playerName:current.playerName || profileData.full_name, phone:current.phone || profileData.phone || ''}));
-        if (window.location.pathname === '/login') window.history.replaceState(null, '', profileData?.role === 'admin' ? '/#admin' : '/');
-        const { data:bookingsData, error:bookingsError } = await client.from('bookings').select('*').order('booking_date').order('start_time');
-        if (!active) return;
-        if (bookingsError) setNotice({kind:'error',text:`No se pudieron cargar las reservas: ${bookingsError.message}`});
-        else setBookings(bookingsData || []);
+        if (path === '/login') {
+          const requestedTarget = new URLSearchParams(window.location.search).get('returnTo');
+          const safeTarget = requestedTarget?.startsWith('/') && !requestedTarget.startsWith('//') ? requestedTarget : '/perfil';
+          const target = profileData?.role === 'admin' ? '/#admin' : safeTarget;
+          window.location.replace(target);
+          return;
+        }
+        if (bookingsResult.error) setNotice({kind:'error',text:`No se pudieron cargar las reservas: ${bookingsResult.error.message}`});
+        else setBookings(bookingsResult.data || []);
+        if (path === '/perfil') {
+          setPlayerProfile(playerResult.data || null);
+          setPlayerProfileError(playerResult.error ? `No se pudo cargar tu perfil de jugador: ${playerResult.error.message}` : '');
+        }
+        setAuthReady(true);
       } catch (error) {
-        if (active) setAuthError(`No se pudo verificar tu cuenta en Supabase: ${error.message}`);
+        if (active) { setAuthError(`No se pudo verificar tu cuenta en Supabase: ${error.message}`); setAuthReady(true); }
       }
     };
-    const { data:{ subscription } } = client.auth.onAuthStateChange((event, session) => { if (event === 'PASSWORD_RECOVERY') setAuthOpen(true); window.setTimeout(() => hydrate(session),0); });
+    const { data:{ subscription } } = client.auth.onAuthStateChange((event, session) => { window.setTimeout(() => hydrate(session),0); });
     return () => { active=false; subscription.unsubscribe(); };
-  }, [client]);
+  }, [client, path]);
 
   useEffect(() => {
     if (!client) return;
     client.from('fields').select('id,name,complex,surface_type,capacity,price,active').order('id').then(({data,error}) => {
-      if (!error && data?.length) setFields(data.filter(field => field.active));
+      if (!error && data?.length) {
+        const activeFields = data.filter(field => field.active);
+        setFields(activeFields);
+        const savedFieldId = sessionStorage.getItem('turnos:return-reservation-field');
+        const savedField = activeFields.find(field => String(field.id) === savedFieldId);
+        if (savedField) {
+          setSelected(savedField);
+          window.setTimeout(() => document.getElementById('reservas')?.scrollIntoView(), 0);
+        }
+        if (savedFieldId) sessionStorage.removeItem('turnos:return-reservation-field');
+      }
     });
   }, [client]);
 
@@ -267,17 +479,13 @@ function App() {
     return () => { active=false; };
   }, [client, date, selected, user, bookings]);
 
-  useEffect(() => {
-    if (!authOpen) return undefined;
-    const onKey = event => event.key === 'Escape' && setAuthOpen(false);
-    document.addEventListener('keydown', onKey); document.body.classList.add('react-dialog-open');
-    return () => { document.removeEventListener('keydown', onKey); document.body.classList.remove('react-dialog-open'); };
-  }, [authOpen]);
-
-  const selectField = field => { setSelected(field); setNotice(null); setTime(''); if (!user) setAuthOpen(true); };
+  const selectField = field => {
+    setSelected(field); setNotice(null); setTime('');
+    if (!user) { sessionStorage.setItem('turnos:return-reservation-field', String(field.id)); window.location.assign('/login?returnTo=%2F%23reservas'); }
+  };
   const submitBooking = async event => {
     event.preventDefault(); setNotice(null);
-    if (!client || !user) { setAuthOpen(true); return; }
+    if (!client || !user) { window.location.assign('/login?returnTo=%2F%23reservas'); return; }
     if (!validPhone(form.phone)) { setNotice({kind:'error',text:'Ingresá un teléfono válido de Argentina para confirmar la reserva.'}); return; }
     if (!selected || !date || !time) { setNotice({kind:'error',text:'Elegí una fecha y un horario disponible.'}); return; }
     setSubmitting(true);
@@ -296,21 +504,29 @@ function App() {
     if (error) { setNotice({ kind: 'error', text: 'No se pudo cerrar la sesión. Volvé a intentar.' }); return; }
     window.location.assign('/');
   };
-  const openLogin = () => {setAuthOpen(true);window.history.replaceState(null,'','#login');};
-  const closeLogin = () => {setAuthOpen(false);if(window.location.pathname === '/login')window.history.replaceState(null,'','/');else if(window.location.hash === '#login')window.history.replaceState(null,'',window.location.pathname + window.location.search);};
-  const handleAuthenticated = session => {setAuthOpen(false);setUser(session?.user || null);if(window.location.hash === '#login')window.history.replaceState(null,'',window.location.pathname + window.location.search);};
+  const openLogin = () => {
+    const returnTo = sessionStorage.getItem('turnos:return-after-auth') === 'fichajes' ? '/fichajes' : '/perfil';
+    sessionStorage.removeItem('turnos:return-after-auth');
+    window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+  };
+  const handleAuthenticated = session => { setUser(session?.user || null); };
 
-  if (window.location.pathname.replace(/\/$/, '') === '/fichajes') return <><Header user={user} isAdmin={isAdmin} isFichajes onLogin={openLogin} onSignOut={signOut}/><Fichajes client={client} user={user} profile={profile} bookings={bookings} onLogin={openLogin}/><footer className="react-footer"><a className="react-brand" href="/"><BrandMark/><span><strong>LA BOMBONERITA</strong><small>FÚTBOL CLUB · SALTA</small></span></a><span>Salta Capital, Argentina · © 2026 La Bombonerita Fútbol Club</span><a href="https://wa.me/543874797240">+54 387 4797240</a></footer>{authOpen && <AuthDialog client={client} onClose={closeLogin} onAuthenticated={handleAuthenticated}/>}</>;
+  if (path === '/login') return <><Header user={user} isAdmin={isAdmin} onLogin={openLogin} onSignOut={signOut}/><AuthPage client={client} onAuthenticated={handleAuthenticated}/><footer className="react-footer"><a className="react-brand" href="/"><BrandMark/><span><strong>LA BOMBONERITA</strong><small>FÚTBOL CLUB · SALTA</small></span></a><span>Salta Capital, Argentina · © 2026 La Bombonerita Fútbol Club</span><a href="https://wa.me/543874797240">+54 387 4797240</a></footer></>;
+  if (path === '/fichajes') return <><Header user={user} isAdmin={isAdmin} isFichajes onLogin={openLogin} onSignOut={signOut}/><Fichajes client={client} user={user} profile={profile} bookings={bookings} onLogin={openLogin}/><footer className="react-footer"><a className="react-brand" href="/"><BrandMark/><span><strong>LA BOMBONERITA</strong><small>FÚTBOL CLUB · SALTA</small></span></a><span>Salta Capital, Argentina · © 2026 La Bombonerita Fútbol Club</span><a href="https://wa.me/543874797240">+54 387 4797240</a></footer></>;
   if (isAdmin) return <AdminPanel client={client} user={user} profile={profile} onSignOut={signOut}/>;
+
+  if (path === '/perfil') {
+    if (!authReady) return <main className="react-account-page"><p role="status">Cargando tu cuenta…</p></main>;
+    return <><Header user={user} isAdmin={isAdmin} onLogin={openLogin} onSignOut={signOut}/><AccountPage client={client} user={user} profile={profile} bookings={bookings} playerProfile={playerProfile} playerProfileError={playerProfileError} onCancel={cancelBooking}/><footer className="react-footer"><a className="react-brand" href="/"><BrandMark/><span><strong>LA BOMBONERITA</strong><small>FÚTBOL CLUB · SALTA</small></span></a><span>Salta Capital, Argentina · © 2026 La Bombonerita Fútbol Club</span><a href="https://wa.me/543874797240">+54 387 4797240</a></footer></>;
+  }
 
   return <><Header user={user} isAdmin={isAdmin} onLogin={openLogin} onSignOut={signOut}/><main ref={mainRef}>
     {authError && <p className="react-auth-message" role="alert">{authError}</p>}
     <Hero onReserve={() => setSelected(current => current)}/><Facilities/>
     <Reservation fields={fields} selected={selected} onSelect={selectField} date={date} setDate={setDate} time={time} setTime={setTime} times={times} user={user} form={form} setForm={setForm} onSubmit={submitBooking} submitting={submitting} onLogin={openLogin} notice={notice}/>
-    {user && !isAdmin && <MyBookings bookings={bookings} onCancel={cancelBooking}/>}<Contact/>
+    <Contact/>
     <section className="react-community"><span>EL PARTIDO ES MEJOR EN EQUIPO</span><h2>¿Falta uno?</h2><a href="/fichajes">Encontrá jugadores en Fichajes <b aria-hidden="true">↗</b></a></section>
   </main><footer className="react-footer"><a className="react-brand" href="#inicio"><BrandMark/><span><strong>LA BOMBONERITA</strong><small>FÚTBOL CLUB · SALTA</small></span></a><span>Salta Capital, Argentina · © 2026 La Bombonerita Fútbol Club</span><a href="https://wa.me/543874797240">+54 387 4797240</a></footer>
-    {authOpen && <AuthDialog client={client} onClose={closeLogin} onAuthenticated={handleAuthenticated}/>}
   </>;
 }
 

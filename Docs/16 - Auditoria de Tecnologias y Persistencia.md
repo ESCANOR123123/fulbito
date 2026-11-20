@@ -55,6 +55,7 @@ React y Vite compilan la experiencia moderna. Express sirve la aplicación compi
 | `player_profiles` | Perfiles deportivos publicados/moderados. |
 | `urgent_notices` | Avisos para buscar jugadores. |
 | `player_profile_reports` | Denuncias sobre perfiles. |
+| Supabase Storage `profile-photos` | Fotos privadas de cuenta; cada persona solo puede acceder a su carpeta. La ruta se guarda en los metadatos de Supabase Auth. |
 
 El esquema define **Row Level Security (RLS)** para limitar lectura y escritura según usuario/rol. No hay credenciales de servicio en el frontend: se usa una clave publishable en `public/supabase-config.js`.
 

@@ -1,29 +1,37 @@
-# fulbito
+# La Bombonerita FC
 
-Cancha de fútbol para La Bombonerita FC. El proyecto presenta el complejo, permite reservar canchas y conecta jugadores con equipos. La aplicación moderna usa React 19, Vite, Tailwind CSS, Express y Supabase (Auth y PostgreSQL).
+Plataforma web para consultar y reservar canchas y conectar jugadores con equipos, pensada para futbolistas, capitanes y administradores de complejos deportivos.
 
-## Desarrollo
+## Qué se puede hacer
+
+- Conocer las instalaciones y consultar las canchas disponibles.
+- Crear una cuenta, reservar turnos y consultar o cancelar reservas propias.
+- Publicar y buscar jugadores, compartir avisos urgentes y administrar el complejo.
+
+## Probarlo
+
+En desarrollo local: `http://localhost:5173/` · Fichajes: `http://localhost:5173/fichajes`.
+
+Publicación online: pendiente de configurar.
+
+## Ejecutarlo en tu computadora
+
+Requiere Node.js 20 o superior.
 
 ```sh
-npm ci
+npm install
 npm run dev
 ```
 
-Abrí la URL que indique Vite. La página pública de Fichajes está en `/fichajes`.
-
-## Servidor local integrado
+Abrí la URL que indique Vite. Para ejecutar la versión servida por Express:
 
 ```sh
 npm run build
 npm start
 ```
 
-Express sirve React en `http://localhost:3000`; `/v1` conserva la versión Vanilla como respaldo histórico.
+## Tecnologías
 
-## Supabase
+JavaScript, React 19, Vite, Tailwind CSS, Express, Supabase Auth y PostgreSQL, GSAP y Supabase CLI.
 
-La configuración pública del cliente se encuentra en `public/supabase-config.js`. No agregues claves `service_role` ni secretos al repositorio. Las tablas y políticas se definen en `supabase/schema.sql` y `supabase/migrations/`.
-
-## Documentación
-
-Las especificaciones, roadmap y guías de prueba están en `Docs/`. Las pruebas manuales multiusuario de Fichajes están descritas en `Docs/13 - Guia Test Etapa 5.md`.
+Hecho por [Nombre] · IITA Becados 2026

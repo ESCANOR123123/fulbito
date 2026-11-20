@@ -539,3 +539,247 @@
 ### Pendiente
 - El usuario confirmó que aplicó la migración 004 y desplegó la función. Falta configurar el dominio y secretos de Resend, registrar los secretos internos en Vault, activar Cron y ejecutar las pruebas de entrega.
 
+## 2026-11-13 - Perfil de usuario y acceso independiente
+
+### Cambio
+- Se agregó la ruta `/perfil` para consultar las reservas de la cuenta, mostrarlas como confirmadas y cancelarlas.
+- Desde esa página, un jugador con perfil de Fichajes puede editar sus datos, cambiar su estado o eliminar el perfil. Si aún no tiene uno, puede ir a Fichajes para crearlo.
+- Se convirtió `/login` en una página independiente con retorno al flujo de reserva o Fichajes; al entrar directamente, lleva al perfil.
+- La selección de cancha se conserva al pedir login desde una reserva.
+
+### Archivos afectados
+- `frontend/src/App.jsx`
+- `frontend/src/styles.css`
+
+### Verificación
+- `npm run build`: compilación correcta.
+- La comprobación HTTP local no se completó porque el entorno bloqueó la conexión al servidor local. No se realizaron pruebas autenticadas con Supabase.
+
+## 2026-11-13 - Menú hamburguesa para navegación móvil
+
+### Cambio
+- En pantallas de hasta 760 px, la navegación se presenta como un menú desplegable activado por un botón hamburguesa de 44 × 44 px.
+- El botón informa su estado con `aria-expanded`, tiene nombre accesible y cambia a control de cierre. El menú también se cierra al elegir un enlace o pulsar Escape; al cerrarlo con Escape, el foco vuelve al botón.
+- En escritorio se mantiene la navegación horizontal existente.
+
+### Archivos afectados
+- `frontend/src/App.jsx`
+- `frontend/src/styles.css`
+
+### Verificación
+- `npm run build`: compilación correcta.
+- Detector mecánico de Impeccable: sin hallazgos.
+- No se verificó en un teléfono físico.
+
+## 2026-11-13 - Reglas de ramas, documentación y aprobación Git
+
+### Cambio
+- Se creó `AGENTS.md` con las reglas persistentes de trabajo del repositorio.
+- Se registró en `Docs/02 - Prompt y Decisiones.md` que las tareas específicas van en ramas y que cada cambio debe documentarse.
+- Se estableció consultar por separado antes de cada commit y cada push; también se prohíbe descartar cambios existentes o guardar secretos en el repositorio.
+
+### Archivos afectados
+- `AGENTS.md`
+- `Docs/02 - Prompt y Decisiones.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- Revisión documental de las reglas añadidas. No se hizo commit ni push.
+
+## 2026-11-13 - Carga más rápida de Mi perfil
+
+### Cambio
+- `/perfil` inicia en paralelo las consultas de la cuenta, las reservas y el perfil de jugador, en vez de cargar el jugador después de terminar las otras consultas.
+- `/login` mantiene su redirección sin hacer consultas de reservas ni de jugador que no necesita.
+- Se quitó el enlace «Volver al inicio» de `/perfil`.
+
+### Archivos afectados
+- `frontend/src/App.jsx`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta.
+- `git diff --check`: sin errores de formato.
+
+## 2026-11-13 - Ajuste de proporciones en Mi perfil
+
+### Cambio
+- Se redujo la escala del título principal y de los títulos de sección para mejorar la jerarquía visual, especialmente en pantallas angostas.
+- Se agregó espacio entre el encabezado de cuenta y la sección «Mis reservas» para que el divisor no quede pegado al siguiente bloque.
+- No se modificó el contenido ni el comportamiento de la página.
+
+### Archivos afectados
+- `frontend/src/styles.css`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta.
+- Detector de Impeccable con alcance de layout: sin hallazgos.
+- No se pudo revisar una captura nueva en navegador ni en un teléfono físico.
+
+## 2026-11-13 - Rediseño de Mi perfil basado en referencias Stitch
+
+### Cambio
+- Se tomó como referencia la pantalla web y móvil del proyecto Stitch «Panel de Perfil de Usuario».
+- En escritorio, `/perfil` presenta la identidad de la cuenta, iniciales como avatar, el recuento real de reservas y las secciones de reservas y ficha de jugador en dos columnas.
+- En móvil, las reservas y la ficha de jugador se alternan con un selector accesible de dos opciones.
+- Se conservaron los datos y operaciones existentes; no se copiaron estadísticas de muestra. En ese momento no había soporte de imagen y el avatar mostraba iniciales; la carga se agregó después en la entrada «Carga de foto de perfil».
+
+### Archivos afectados
+- `frontend/src/App.jsx`
+- `frontend/src/styles.css`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite mantiene el aviso de un chunk principal mayor a 500 kB.
+- Detector de Impeccable con alcance de layout: sin hallazgos.
+- `git diff --check`: sin errores de formato.
+- No se verificó en navegador ni en un teléfono físico.
+
+## 2026-11-13 - Carga de foto de perfil
+
+### Cambio
+- Se agregó a `/perfil` un control para seleccionar o reemplazar una foto JPG, PNG o WebP de hasta 5 MB, con estados de carga y mensajes accesibles.
+- La imagen se guarda en un bucket privado de Supabase Storage; cada cuenta queda limitada a su propia carpeta mediante políticas RLS. La ruta se conserva en los metadatos de Supabase Auth y la vista usa una URL firmada temporal.
+- Se agregó la migración `006_profile_photos.sql` (se eligió el número 006 porque ya existía una migración 005 pendiente en el árbol de trabajo). Hay que ejecutarla en el proyecto Supabase antes de que la carga esté disponible.
+
+### Archivos afectados
+- `frontend/src/App.jsx`
+- `frontend/src/styles.css`
+- `supabase/migrations/006_profile_photos.sql`
+- `Docs/04 - Log Tecnico y Cambios.md`
+- `Docs/15 - Autenticacion y Reservas por Cuenta.md`
+- `Docs/16 - Auditoria de Tecnologias y Persistencia.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite mantiene el aviso de un chunk principal mayor a 500 kB.
+- Detector de Impeccable con alcance de layout: sin hallazgos.
+- `git diff --check`: sin errores de formato.
+- Pendiente aplicar la migración en Supabase y probar la subida, lectura y reemplazo con una cuenta autenticada.
+
+## 2026-11-20 - Limpieza de avisos GSAP y Supabase Auth
+
+### Cambio
+- Se comparte la instancia React de Supabase en `window` para que el doble montaje de desarrollo con `React.StrictMode` no cree clientes GoTrue concurrentes.
+- Se limita la inicialización de animaciones GSAP a la portada, donde existen sus elementos y el contexto de animación.
+
+### Archivos afectados
+- `frontend/src/App.jsx`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite mantiene el aviso de un chunk principal mayor a 500 kB.
+- `git diff --check`: sin errores de formato.
+- Los avisos de consola reportados por el usuario no se han vuelto a comprobar en su navegador.
+
+## 2026-11-20 - Corrección de permisos de lectura pública en Fichajes
+
+### Diagnóstico y cambio
+- La migración 003 otorga al rol `anon` solo columnas públicas de `player_profiles`; no otorga `status` ni `moderation_status`, lo cual es correcto para no exponer datos internos.
+- La política de lectura pública de `player_profile_reviews` en la migración 005 consultaba esas dos columnas directamente desde una subconsulta. Al cargar opiniones como usuario no autenticado, Postgres podía rechazar la consulta por permisos y la interfaz mostraba «Fichajes todavía no está disponible».
+- Se reemplazó esa comprobación por `public.is_public_player_profile(uuid)`, una función `SECURITY DEFINER` estable, con `search_path` vacío, sin permiso de ejecución para `PUBLIC` y con resultado booleano solamente. Los roles `anon` y `authenticated` reciben ejecución explícita.
+- Se actualizó la migración 005 para instalaciones nuevas y se agregó la migración 007 como reparación para instalaciones donde la 005 ya fue aplicada. La 007 recarga el caché de esquema de PostgREST.
+
+### Archivos afectados
+- `supabase/migrations/005_fichajes_perfiles_ampliados.sql`
+- `supabase/migrations/007_fix_fichajes_public_reviews_policy.sql`
+- `Docs/12 - Especificacion Etapa 5 - Modulo Fichaje.md`
+- `Docs/13 - Guia Test Etapa 5.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite mantiene el aviso de un chunk principal mayor a 500 kB.
+- `git diff --check`: sin errores de formato.
+- Revisión estática de la política, función y grants en las migraciones 003, 005 y 007.
+- Las migraciones no se aplicaron al proyecto remoto. La consulta pública con `anon` todavía debe verificarse en Supabase.
+
+## 2026-11-13 - Perfiles ampliados de Fichajes
+
+### Cambio
+- Se agregó el detalle de perfil con calificación promedio, opiniones, galería de fotos, presentación, enlaces a videos y redes y acceso al contacto.
+- Se amplió el formulario de Fichajes con foto de perfil y cuerpo completo (JPG, PNG o WebP, hasta 5 MB), video y enlaces de Instagram/TikTok.
+- Las opiniones requieren correo verificado, permiten una calificación y comentario editables por cuenta y perfil, y no admiten autoevaluaciones.
+- La migración `005_fichajes_perfiles_ampliados.sql` crea campos, tabla, controles RLS y bucket de fotos públicas con escritura limitada a la carpeta de cada cuenta. Los enlaces se validan tanto en la interfaz como en PostgreSQL.
+- Las fotos/enlaces modificados devuelven el perfil a revisión; el detalle público solo muestra perfiles activos y aprobados.
+
+### Archivos afectados
+- `frontend/src/Fichajes.jsx`
+- `frontend/src/fichajes.css`
+- `supabase/migrations/005_fichajes_perfiles_ampliados.sql`
+- `Docs/12 - Especificacion Etapa 5 - Modulo Fichaje.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite informa que el chunk JavaScript principal supera 500 kB.
+- La migración no se aplicó a Supabase y no se verificaron cargas, RLS ni opiniones con cuentas reales.
+
+## 2026-11-20 - Selector de estrellas en opiniones de Fichajes
+
+### Cambio
+- Se reemplazó el desplegable de calificación por cinco radios nativos presentados como estrellas.
+- La selección conserva el valor entero de 1 a 5 y anuncia el puntaje en texto; cada opción tiene nombre accesible y las flechas del teclado funcionan con el comportamiento nativo del grupo.
+- Se respetan el foco visible, el área táctil de 48 px y la preferencia de movimiento reducido; no se agregaron dependencias.
+
+### Archivos afectados
+- `frontend/src/Fichajes.jsx`
+- `frontend/src/fichajes.css`
+- `Docs/12 - Especificacion Etapa 5 - Modulo Fichaje.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite conserva el aviso de un chunk JavaScript principal mayor a 500 kB.
+- `git diff --check`: sin errores de formato.
+- Detector de Impeccable sobre `Fichajes.jsx` y `fichajes.css`: sin hallazgos.
+- No se realizaron pruebas interactivas con teclado ni lector de pantalla.
+
+## 2026-11-20 - Mensajes visibles al publicar opiniones en Fichajes
+
+### Cambio
+- El resultado de publicar una opinión ahora se muestra dentro del formulario del perfil, donde no queda tapado por el diálogo.
+- Se agregó manejo de errores de Supabase y de excepciones de red con mensajes de recuperación; `finally` siempre libera el estado de carga para permitir reintentar.
+- La guía de Fichajes incluye casos para publicación exitosa y errores de verificación/conexión.
+
+### Archivos afectados
+- `frontend/src/Fichajes.jsx`
+- `frontend/src/fichajes.css`
+- `Docs/13 - Guia Test Etapa 5.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite conserva el aviso de un chunk JavaScript principal mayor a 500 kB.
+- `git diff --check`: sin errores de formato.
+- Detector de Impeccable sobre `Fichajes.jsx` y `fichajes.css`: sin hallazgos.
+- No se verificó el guardado contra el proyecto remoto de Supabase.
+
+## 2026-11-20 - Ajuste de permisos al publicar opiniones de Fichajes
+
+### Cambio
+- Se corrigió el guardado que fallaba con `42501` porque PostgREST/Supabase pedía permiso global `UPDATE` al usar `upsert`, mientras la política SQL limita la actualización a las columnas `stars`, `comment` y `updated_at`.
+- La interfaz ahora inserta una opinión nueva o actualiza la opinión propia existente por separado, conservando los grants por columna y RLS; no se amplió el permiso global sobre la tabla.
+- Se agregó el caso de prueba para publicar y luego editar una opinión desde la misma cuenta.
+
+### Archivos afectados
+- `frontend/src/Fichajes.jsx`
+- `Docs/13 - Guia Test Etapa 5.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite conserva el aviso de un chunk JavaScript principal mayor a 500 kB.
+- `git diff --check`: sin errores de formato.
+- No se probó contra Supabase remoto.
+
+## 2026-11-20 - Directorio de salida para Vercel
+
+### Cambio
+- Se configuró Vercel para publicar `frontend/dist`, que es donde Vite genera la compilación al ejecutarse desde la raíz del repositorio.
+- Esto corrige el error de despliegue que buscaba `dist` en la raíz y no encontraba la salida del build.
+
+### Archivos afectados
+- `vercel.json`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; se confirmó `frontend/dist/index.html`. Vite mantiene el aviso del chunk JavaScript mayor a 500 kB.
+- `git diff --check`: sin errores de formato.
+- No se ejecutó un despliegue de Vercel.
+
