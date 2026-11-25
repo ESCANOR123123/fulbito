@@ -821,3 +821,118 @@
 - `git diff --check`: sin errores de formato.
 - Vite mantiene el aviso de chunk JavaScript mayor a 500 kB; no se probó un despliegue real en Vercel.
 
+## 2026-11-20 - Rediseño de Fichajes y pizarra de avisos
+
+### Cambio
+- Se agregó una cancha interactiva: su orientación es vertical en celular y horizontal en escritorio; seleccionar una zona filtra perfiles por posición principal o secundaria y permanece sincronizado con los chips.
+- Los avisos abiertos de “Falta uno” ahora se presentan como publicaciones clavadas en un tablón, conservando fecha, horario, WhatsApp y cierre de avisos propios.
+- No se modificó el esquema de Supabase ni se agregaron dependencias.
+
+### Archivos afectados
+- `frontend/src/Fichajes.jsx`
+- `frontend/src/fichajes.css`
+- `Docs/13 - Guia Test Etapa 5.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite mantiene el aviso de chunk JavaScript mayor a 500 kB.
+- `git diff --check`: sin errores de formato.
+
+- Pendiente probar en navegador los tamaños móvil/escritorio y el flujo conectado a Supabase.
+
+## 2026-11-20 - Selección múltiple obligatoria de posiciones
+
+### Cambio vigente
+- Se quitaron los filtros por chips, nivel, sede y día de Fichajes. Los perfiles solo aparecen después de elegir una o más zonas en la cancha.
+- La selección múltiple reúne perfiles que coinciden con cualquiera de las posiciones principales o secundarias elegidas; desmarcar todas vuelve al estado inicial.
+- Esta decisión reemplaza la sincronización con chips anotada en el cambio anterior de Fichajes.
+
+### Archivos afectados
+- `frontend/src/Fichajes.jsx`
+- `frontend/src/fichajes.css`
+- `Docs/13 - Guia Test Etapa 5.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite mantiene el aviso de chunk JavaScript mayor a 500 kB.
+- Se comprobó que ya no haya controles ni referencias a filtros de nivel, sede, día o chips de posición.
+- Detector de Impeccable: sin hallazgos; `git diff --check`: sin errores de formato.
+- No se verificó el flujo en navegador ni contra Supabase.
+
+## 2026-11-20 - Cancha de Fichajes según referencia visual
+
+### Cambio vigente
+- Se reemplazó el campo plano por una cancha en perspectiva con cinco camisetas numeradas y rótulos para Arquero, Defensor, dos Alas y Pívot.
+- Las dos Alas activan/desactivan Mediocampista; Pívot corresponde a Delantero. Los puestos siguen siendo controles accesibles y seleccionables en conjunto.
+- En escritorio la cancha se dispone horizontal; en celular, vertical. No se agregó una imagen ni dependencia externa.
+
+### Archivos afectados
+- `frontend/src/Fichajes.jsx`
+- `frontend/src/fichajes.css`
+- `Docs/13 - Guia Test Etapa 5.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite mantiene el aviso de chunk JavaScript mayor a 500 kB.
+- Detector de Impeccable: sin hallazgos; `git diff --check`: sin errores de formato.
+- No se validó visualmente en navegador ni se probó el filtrado con datos de Supabase.
+
+## 2026-11-25 - Nombres de posiciones en la cancha
+
+### Cambio vigente
+- Se reemplazaron los rótulos visuales “Ala” y “Pívot” por “Mediocampista” y “Delantero”. Las dos camisetas centrales siguen activando la misma posición de mediocampista.
+
+### Archivos afectados
+- `frontend/src/Fichajes.jsx`
+- `Docs/13 - Guia Test Etapa 5.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite mantiene el aviso de chunk JavaScript mayor a 500 kB.
+- `git diff --check`: sin errores de formato.
+
+## 2026-11-25 - Formación de cuatro posiciones
+
+### Cambio vigente
+- Se dejó una camiseta por posición: Arquero 1, Defensor 2, Mediocampista 5 y Delantero 10.
+
+### Archivos afectados
+- `frontend/src/Fichajes.jsx`
+- `frontend/src/fichajes.css`
+- `Docs/13 - Guia Test Etapa 5.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite mantiene el aviso de chunk JavaScript mayor a 500 kB.
+- `git diff --check`: sin errores de formato.
+
+## 2026-11-25 - Mejora visual de los arcos
+
+### Cambio vigente
+- Se dibujaron los arcos en ambos extremos con estructura, red y líneas de malla, y se añadieron los arcos de penal para hacer más clara la geometría del campo.
+- La misma representación se adaptó a las versiones horizontal y vertical de la cancha.
+
+### Archivos afectados
+- `frontend/src/Fichajes.jsx`
+- `frontend/src/fichajes.css`
+- `Docs/13 - Guia Test Etapa 5.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite mantiene el aviso de chunk JavaScript mayor a 500 kB.
+- Detector de Impeccable: sin hallazgos; `git diff --check`: sin errores de formato.
+- No se comprobó visualmente en navegador.
+
+## 2026-11-25 - Quincho a ancho completo
+
+### Cambio vigente
+- El bloque del quincho ahora se extiende de borde a borde de la sección y tiene esquinas rectas, conservando imagen, texto y enlace.
+
+### Archivos afectados
+- `frontend/src/styles.css`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: compilación correcta; Vite mantiene el aviso de chunk JavaScript mayor a 500 kB.
+- `git diff --check`: sin errores de formato.
+

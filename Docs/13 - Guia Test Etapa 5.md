@@ -24,8 +24,8 @@ La migración 003 y el panel de moderación se confirmaron listos el 2026-10-30.
 |---|--------|-------------------|
 | **1** | Clic en `[+ Cargar mi CV Deportivo]` | Se despliega el modal accesible con el formulario de datos del jugador. |
 | **2** | Con sesión, completar el perfil (Nombre: "Nico 'Rifle'", WhatsApp, Posición: Delantero, Pierna: Diestro, Nivel: Intermedio, consentimiento explícito de contacto) | El CV se guarda en Supabase y aparece públicamente solo tras quedar activo/aprobado. |
-| **3** | Clic en filtro `[🧤 Arquero]` en la barra de chips | La vista se actualiza en tiempo real mostrando únicamente cartas de arqueros (o estado vacío amigable si no hay ninguno). |
-| **4** | Clic en filtro `[Todos]` | Se restablece la lista completa de jugadores disponibles. |
+| **3** | Tocar o enfocar con teclado las camisetas numeradas 1, 2, 5 y 10: Arquero, Defensor, Mediocampista y Delantero | La cancha muestra cuatro jugadores; cada camiseta selecciona su posición. Se resaltan las selecciones y aparecen perfiles que coinciden con alguna posición principal o secundaria elegida. |
+| **4** | Deseleccionar las posiciones elegidas hasta que no quede ninguna | Los perfiles dejan de mostrarse y aparece la indicación de elegir una o más posiciones; no hay filtros adicionales de nivel, sede o día. |
 | **5** | Clic en botón `[⚡ Fichar por WhatsApp]` de una carta | Abre una nueva pestaña de WhatsApp con la URL codificada: *"¡Hola [Nombre]! Vi tu CV en La Bombonerita FC. Estamos buscando un [Posición] para jugar hoy. ¿Te sumás?"*. |
 | **6** | Con la cuenta autora, abrir `[Gestionar mi CV]` | Permite editar, pausar o eliminar el perfil propio; otra cuenta no puede modificarlo. |
 | **7** | Cambiar estado a "En Pausa" y consultar desde otra sesión | El perfil desaparece del catálogo público y el cambio persiste en Supabase. |
@@ -33,6 +33,7 @@ La migración 003 y el panel de moderación se confirmaron listos el 2026-10-30.
 | **9** | Publicar aviso: *"Falta 1 para hoy 21:00 hs"* | El aviso aparece destacado con estilo visual de urgencia en la parte superior del módulo. |
 | **10** | Clic en `[🙋 Postularme como Refuerzo]` en el aviso urgente | Abre WhatsApp hacia el número del capitán con el mensaje: *"¡Hola! Vi en la pizarra de La Bombonerita que te falta un jugador para las 21:00... ¿Sigue libre el lugar?"*. |
 | **11** | Con una cuenta verificada, abrir un perfil ajeno, elegir estrellas y publicar un comentario de 10 a 500 caracteres | El botón muestra el estado de envío y luego aparece una confirmación visible dentro del perfil; la opinión y el promedio se actualizan. Al reabrir el perfil, la opinión permanece guardada. |
+| **12** | Abrir `[Falta uno]` con avisos activos y postularse | Los avisos aparecen como publicaciones clavadas en un tablón, ordenados por fecha y horario; WhatsApp abre el contacto del capitán y el autor puede cerrar su aviso. |
 
 ---
 
@@ -59,8 +60,9 @@ La migración 003 y el panel de moderación se confirmaron listos el 2026-10-30.
   - ⚙️ Mediocampista: Borde y acento ámbar/dorado (`#d97706`).
   - ⚡ Delantero: Borde y acento rojo carmesí (`#dc2626`).
 - [ ] **Badge de Nivel**: Colores semáforo inequívocos (Verde = Recreativo, Amarillo = Intermedio, Rojo = Competitivo).
-- [ ] **Chip Filters**: Filtros de una sola línea con desplazamiento táctil horizontal en móviles.
-- [ ] **Estados Vacíos**: Ilustración o mensaje amigable cuando ningún jugador coincide con el filtro seleccionado (*"No hay jugadores con este perfil por el momento. ¡Sé el primero en postularte!"*).
+- [ ] **Cancha interactiva**: campo en perspectiva con cuatro camisetas numeradas (1, 2, 5 y 10), arcos con red y áreas de penal; horizontal en escritorio, vertical en celular, selección múltiple, foco visible y uso por teclado.
+- [ ] **Tablón de refuerzos**: avisos clavados legibles en celular y escritorio; conservar carga, error, estado vacío, orden, postulación por WhatsApp y cierre propio.
+- [ ] **Estados Vacíos**: mensaje claro cuando todavía no se eligieron posiciones o no hay perfiles coincidentes con las posiciones elegidas.
 - [ ] **Touch Targets**: Todos los botones de acción (`Fichar`, `Gestionar`, `Postularme`) con altura mínima de 48px.
 
 ---
