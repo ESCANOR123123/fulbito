@@ -17,10 +17,12 @@ Transformar la aplicación en una **Single Page Application (SPA)** integral don
 - **Posición**: Fija superior (`position: sticky; top: 0; z-index: 100`).
 - **Identidad**: Logo / Nombre *"La Bombonerita FC"* con badge de estado en vivo: `🟢 Abierto hoy (09:00 - 00:00)`.
 - **Enlaces de navegación rápida (con scroll suave)**:
-  1. `[🏟️ Complejo]` -> ancla `#complejo` (Hero + Instalaciones + Tercer Tiempo).
-  2. `[⚽ Reservas]` -> ancla `#reservas` (Catálogo de canchas y selector de turnos).
-  3. `[📋 Fichajes]` -> ancla `#fichajes` (CV Deportivo y Mercado de Jugadores).
-  4. `[👤 Iniciar Sesión]` -> conmutador a formulario de acceso (Login modal o vista de autenticación para Dueño/Admin y Jugador/Capitán).
+  1. `[🏟️ Complejo]` -> ancla `#complejo` (Hero + video del predio).
+  2. `[🔥 Quincho]` -> ancla `#tercer-tiempo` (foto del quincho y consulta por WhatsApp).
+  3. `[⚽ Reservas]` -> ancla `#reservas` (Catálogo de canchas y selector de turnos).
+  4. `[📋 Fichajes]` -> ancla `#fichajes` (CV Deportivo y Mercado de Jugadores).
+  5. `[📍 Ubicación]` -> ancla `#ubicacion`.
+  6. `[👤 Iniciar Sesión]` -> conmutador a formulario de acceso (Login modal o vista de autenticación para Dueño/Admin y Jugador/Capitán).
 - **Comportamiento en Móvil**:
   - Píldoras compactas horizontales con `overflow-x: auto; -webkit-overflow-scrolling: touch;`.
   - Resaltado automático de la sección activa mediante `IntersectionObserver`.
@@ -43,26 +45,30 @@ Transformar la aplicación en una **Single Page Application (SPA)** integral don
 
 ---
 
-### 3.2. Grilla de Instalaciones y Servicios (`#servicios`)
-Grilla responsiva (1 columna en móvil, 2 en tablet, 3 en desktop) con tarjetas estilizadas:
+### 3.2. Video del complejo (`#complejo`)
+Composición oscura y editorial para presentar las instalaciones:
 
-| Tarjeta | Ícono | Título | Descripción Destacada |
-|---|:---:|---|---|
-| **1** | 🏟️ | **Césped Sintético Pro** | Fibras monofilamento de 50mm con caucho amortiguador y mantenimiento diario. |
-| **2** | 💡 | **Iluminación LED Estadio** | Potencia lumínica uniforme de 350 lux para partidos nocturnos sin sombras. |
-| **3** | 🚿 | **Vestuarios & Lockers** | Duchas presurizadas con agua caliente continua y armarios individuales. |
-| **4** | 🥩 | **Quinchos & Parrillas** | Asadores techados con mesas y bancos amplios para el asado post-partido. |
-| **5** | 🍔 | **Buffet & Pantallas** | Bebidas frías, minutas y transmisión de partidos de fútbol en pantalla gigante. |
-| **6** | 🚗 | **Estacionamiento Propio** | Playa de estacionamiento privada e iluminada dentro del predio. |
+- En escritorio, título y descripción comparten una fila con el video; en celular se apilan.
+- El video se limita a 700 px de ancho, mantiene proporción 16:9 y se enmarca con un acento dorado sutil sobre fondo negro.
+- Reproduce automáticamente en silencio y en bucle, con controles nativos para pausar; `prefers-reduced-motion` desactiva el inicio automático.
+- Si el archivo falla, la portada estática de la cancha queda visible. El quincho tiene una sección propia a continuación.
+
+El video presenta estas instalaciones con títulos y descripciones:
+
+| Título | Descripción |
+|---|---|
+| **Césped Sintético Pro** | Monofilamento de 50mm con caucho amortiguador y césped natural con mantenimiento diario. |
+| **Iluminación LED Estadio** | 350 lux de potencia lumínica uniforme en todas las canchas para partidos nocturnos sin sombras. |
+| **Vestuarios & Lockers** | Duchas individuales con agua caliente continua, sanitarios impecables y casilleros seguros. |
+| **Quinchos & Parrillas** | Espacios techados con asadores completos, mesas amplias y parrillas para el asado de tu equipo. |
+| **Buffet & Pantallas** | Cervezas frías, pizzas, hamburguesas caseras y TV gigante para disfrutar de los partidos profesionales. |
+| **Estacionamiento Privado** | Playa de estacionamiento iluminada y con vigilancia dentro del mismo predio. |
 
 ---
 
-### 3.3. Sección "El Tercer Tiempo" (`#tercer-tiempo`)
-- **Propósito**: Destacar el valor social del predio (el fútbol amateur no termina a los 60 minutos).
-- **Contenido**:
-  - Tarjeta destacada con borde luminoso en tono dorado (`#eab308`).
-  - Copy persuasivo: *"El partido se juega en la cancha. El clásico se gana en la parrilla."*
-  - Opciones de reserva combinada: aviso sobre opción de alquilar quincho al momento de reservar turno.
+### 3.3. Sección independiente del quincho (`#tercer-tiempo`)
+- Presenta la fotografía real a todo el ancho de la sección, sin fondo añadido ni márgenes interiores.
+- Conserva el texto del tercer tiempo y el acceso directo para consultar disponibilidad por WhatsApp.
 
 ---
 

@@ -80,3 +80,47 @@ Para alcanzar un nivel profesional y competitivo, se toman las siguientes refere
 - 💡 Idea y Pilares: [[01 - Idea del Proyecto]]
 - 📋 Fichaje y Landing: [[08 - Modulo Fichaje y Landing - Especificacion y Consultas]]
 - 📜 Registro Técnico: [[04 - Log Tecnico y Cambios]]
+
+---
+
+## 5. Skills para mejorar el diseño del proyecto (revisión 2026-11-25)
+
+Se buscaron skills para orientar mejoras de tipografía, estilo visual, imágenes, animaciones y scroll. La selección está pensada para la app actual: React 19, Vite, CSS del proyecto y GSAP. Los números de instalaciones son los que mostraba skills.sh al consultar y pueden cambiar. Una skill aporta criterios y flujo de trabajo; por sí sola no agrega librerías al producto.
+
+### Recomendadas, ya disponibles en el entorno Codex
+
+| Necesidad | Skill | Cómo aplicarla acá |
+|---|---|---|
+| Dirección visual, composición, jerarquía y responsive | `design-taste-frontend` o `impeccable` | Elegir una dirección que respete la identidad verde/dorada y revisar primero los estilos y componentes existentes. Usar `impeccable` para pulir una pantalla o flujo concreto. |
+| Sistema UI, tipografía y accesibilidad | `ui-ux-pro-max` y `design-system` | Definir escala tipográfica, espaciado y tokens coherentes; validar contraste, tamaños táctiles y lectura móvil. Conservar las variables CSS actuales como fuente de verdad. |
+| Microinteracciones y movimiento | `animate`, `apple-design`, `review-animations` | Decidir primero si el movimiento ayuda a entender estado, acción o jerarquía; preferir transiciones breves con `transform`/`opacity`, contemplar `prefers-reduced-motion` y revisar interrupciones y salida. |
+| Auditoría de movimiento existente | `improve-animations` y `find-animation-opportunities` | Auditar por separado lo que ya se mueve y los lugares donde un movimiento podría ayudar, sin animar cada bloque por rutina. |
+| Imágenes para landing y referencia visual | `imagegen-frontend-web`, `image-to-code`, `imagegen` | Crear imágenes por sección cuando haga falta, y usar referencias visuales para traducir una dirección aprobada a componentes. Revisar legibilidad, recorte móvil, peso y texto alternativo; no generar imágenes si fotos reales del complejo sirven mejor. |
+| Simplicidad y rendimiento | `ponytail` y `mobile-native` | Mantener scroll nativo, evitar agregar una dependencia por un efecto menor y revisar los detalles de interacción móvil. |
+
+Estas skills aparecen disponibles en el entorno Codex de esta sesión; eso no significa que estén versionadas o instaladas dentro del repositorio. No se instaló ninguna skill ni dependencia como parte de esta revisión.
+
+### Opciones externas encontradas
+
+- **`frontend-design` (Anthropic):** guía dirección visual, tipografía, color, composición y movimiento. La ficha consultada muestra 1,2 M de instalaciones; `anthropics/skills` muestra 199,4 mil estrellas. [Ficha y comando `npx skills add https://github.com/anthropics/skills --skill frontend-design`](https://www.skills.sh/anthropics/skills/frontend-design).
+- **`gsap-framer-scroll-animation` (GitHub Awesome Copilot):** patrones técnicos para animación ligada al scroll; 4,2 mil instalaciones y 41,5 mil estrellas del repositorio según su ficha. [Ficha y comando de instalación](https://www.skills.sh/github/awesome-copilot/gsap-framer-scroll-animation).
+
+### Skill externa específica para scroll con GSAP
+
+Si se incorpora al entorno, usar únicamente los patrones GSAP/ScrollTrigger compatibles con el stack actual. La ficha también cubre Framer Motion, pero no hace falta introducirlo: GSAP ya forma parte del proyecto. Para efectos decorativos simples, CSS y scroll nativo son la opción más liviana. Evitar scroll-jacking, movimiento que tape contenido y animaciones que dificulten reservar o consultar fichajes.
+
+### Orden sugerido para un trabajo futuro
+
+1. Revisar la pantalla y sus tokens actuales con `design-taste-frontend` o `impeccable`.
+2. Resolver primero estructura, tipografía, contraste y adaptación móvil; si se incorpora `frontend-design`, usarla para establecer una dirección visual completa.
+3. Definir imágenes reales o generadas según el contenido y la disponibilidad de fotos del complejo.
+4. Añadir solo las animaciones justificadas por `animate`; si hay secuencias atadas al scroll, consultar la skill GSAP específica y mantener accesible el contenido sin animación.
+5. No instalar paquetes de frontend ni cambiar servicios sin consultar, según las reglas del proyecto.
+
+### Fuentes consultadas
+
+- [skills.sh — catálogo y ranking](https://skills.sh/)
+- [Anthropic — frontend-design](https://www.skills.sh/anthropics/skills/frontend-design)
+- [Emil Kowalski — animate](https://www.skills.sh/emilkowalski/skills/animate)
+- [GitHub Awesome Copilot — GSAP & Framer Motion scroll animations](https://www.skills.sh/github/awesome-copilot/gsap-framer-scroll-animation)
+- [Leonxlnx — catálogo de design e imagen](https://www.skills.sh/leonxlnx/taste-skill)

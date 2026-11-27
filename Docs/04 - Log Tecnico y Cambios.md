@@ -1,5 +1,109 @@
 # Log de Decisiones Técnicas y Cambios
 
+## 2026-11-27 - Bordes rectos en la foto de cancha
+
+### Cambio
+- La imagen de cancha del encabezado ahora tiene esquinas rectas.
+
+### Archivos afectados
+- `frontend/src/styles.css`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `git diff --check`: ejecutado sin errores.
+
+## 2026-11-27 - Quincho a todo el ancho
+
+### Cambio
+- La foto del quincho ocupa todo el ancho de su sección, sin fondo añadido, relleno interior, bordes redondeados ni sombra.
+
+### Archivos afectados
+- `frontend/src/styles.css`
+- `Docs/10 - Especificacion Etapa 4 - Vitrina Comercial.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: ejecutado correctamente; Vite avisó que un chunk JavaScript supera los 500 kB.
+- `git diff --check`: ejecutado sin errores; se conservó el aviso de normalización LF/CRLF de un Markdown previo.
+- La revisión visual en navegador quedó pendiente.
+
+## 2026-11-27 - Separación de «El complejo» y «Quincho»
+
+### Cambio
+- El video quedó en la sección `#complejo` y el quincho pasó a una sección semántica independiente `#tercer-tiempo`.
+- Se agregó el enlace «Quincho» a la navegación principal y un fondo verde oscuro para diferenciar visualmente ese bloque.
+
+### Archivos afectados
+- `frontend/src/App.jsx`
+- `frontend/src/styles.css`
+- `Docs/10 - Especificacion Etapa 4 - Vitrina Comercial.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: ejecutado correctamente; Vite avisó que un chunk JavaScript supera los 500 kB.
+- `git diff --check`: ejecutado sin errores; se conservó el aviso de normalización LF/CRLF de un Markdown previo.
+- Detector Impeccable en `App.jsx` y `styles.css`: ejecutado, sin hallazgos.
+- No se hizo una revisión visual en navegador en esta iteración.
+
+## 2026-11-27 - Presentación compacta del video del predio
+
+### Cambio
+- Se reorganizó «El complejo» en dos columnas en escritorio: título y descripción a la izquierda, video enmarcado de hasta 700 px a la derecha; en celular se apilan.
+- Se mantuvo el fondo negro, el autoplay silenciado, el bucle, los controles, la portada de respaldo y el bloque independiente del quincho.
+
+### Archivos afectados
+- `frontend/src/App.jsx`
+- `frontend/src/styles.css`
+- `Docs/10 - Especificacion Etapa 4 - Vitrina Comercial.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: ejecutado correctamente; Vite avisó que un chunk JavaScript supera los 500 kB.
+- `git diff --check`: ejecutado sin errores; se conservó el aviso de normalización LF/CRLF de un Markdown previo.
+- Detector Impeccable en `App.jsx` y `styles.css`: ejecutado, sin hallazgos.
+- La composición responsive está implementada; no se pudo revisar en navegador en este entorno.
+
+## 2026-11-27 - Recorrido en video del complejo
+
+### Cambio
+- Se incorporó el MP4 local `complejo-recorrido.mp4` dentro de «El complejo», entre el encabezado y la grilla de instalaciones.
+- El reproductor usa controles nativos, no reproduce automáticamente y muestra una portada de cancha; si el video falla, presenta la imagen estática.
+- El bloque independiente del quincho conserva su foto y consulta por WhatsApp.
+
+### Por qué
+- Mostrar visualmente las instalaciones del predio en un único recorrido.
+
+### Archivos afectados
+- `frontend/src/App.jsx`
+- `frontend/src/styles.css`
+- `public/images/complejo-recorrido.mp4`
+- `Docs/10 - Especificacion Etapa 4 - Vitrina Comercial.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: ejecutado correctamente; Vite emitió una advertencia por un chunk JavaScript mayor a 500 kB.
+- `git diff --check`: ejecutado sin errores (con avisos de normalización LF/CRLF).
+- Detector Impeccable (`App.jsx`, `styles.css`): ejecutado; sin hallazgos.
+- No se completó la comprobación visual/reproducción en navegador: el control de navegador no pudo inicializarse y el entorno bloqueó la solicitud HTTP local a Vite.
+
+## 2026-11-25 - Skills para diseño visual y movimiento
+
+### Cambio
+- Se amplió la auditoría UI/UX con skills disponibles en el entorno Codex y opciones externas para dirección visual, tipografía, accesibilidad, imágenes, animaciones y scroll con GSAP.
+- Se agregó un flujo sugerido de uso, fuentes y la aclaración de que instalar una skill no instala dependencias de la aplicación.
+
+### Por qué
+- Dejar una referencia concreta para futuras mejoras de diseño de la landing, reservas y fichajes, alineada con el stack y las reglas del proyecto.
+
+### Archivos afectados
+- `Docs/09 - Auditoria UI-UX - Frameworks Skills y Referencias.md`
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- Se consultaron fichas y el catálogo de skills.sh para validar descripciones, instalaciones y repositorios fuente.
+- `git diff --check`: ejecutado, sin errores de formato (Git avisó sobre la normalización LF/CRLF de los dos Markdown).
+- No se instalaron skills ni dependencias, y no se ejecutaron pruebas de aplicación porque el cambio es documental.
+
 ## 2026-10-09 - Inicio Proyecto (Etapa 1)
 
 ### Stack Elegido

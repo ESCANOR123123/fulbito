@@ -67,7 +67,7 @@ function Header({ user, isAdmin, onLogin, onSignOut, isFichajes = false }) {
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d={menuOpen ? 'M5 5l14 14M19 5 5 19' : 'M3 6h18M3 12h18M3 18h18'} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
       </button>
       <nav id="primary-navigation" className={`react-nav${menuOpen ? ' is-open' : ''}`} aria-label="Navegación principal">
-        <a href={target('#complejo')} onClick={closeMenu}>El complejo</a><a href={target('#reservas')} onClick={closeMenu}>Reservas</a><a href="/fichajes" onClick={closeMenu}>Fichajes</a><a href={target('#ubicacion')} onClick={closeMenu}>Ubicación</a>
+        <a href={target('#complejo')} onClick={closeMenu}>El complejo</a><a href={target('#tercer-tiempo')} onClick={closeMenu}>Quincho</a><a href={target('#reservas')} onClick={closeMenu}>Reservas</a><a href="/fichajes" onClick={closeMenu}>Fichajes</a><a href={target('#ubicacion')} onClick={closeMenu}>Ubicación</a>
         {user && !isAdmin && <a href="/perfil" onClick={closeMenu}>Mi perfil</a>}
         {isAdmin && <a href="/#admin" onClick={closeMenu}>Administración</a>}
         {user ? <button className="react-nav-account" onClick={() => { closeMenu(); onSignOut(); }}>Cerrar sesión</button> : <button className="react-nav-account" onClick={() => { closeMenu(); onLogin(); }}>Iniciar sesión <span aria-hidden="true">↗</span></button>}
@@ -88,23 +88,32 @@ function Hero({ onReserve }) {
   </section>;
 }
 
-const FACILITIES = [
-  ['Césped Sintético Pro', 'Monofilamento de 50mm con caucho amortiguador y césped natural con mantenimiento diario.', 'M4 7h24v18H4zM16 7v18m0-13a4 4 0 1 0 0 8m0-8a4 4 0 1 1 0 8'],
-  ['Iluminación LED Estadio', '350 lux de potencia lumínica uniforme en todas las canchas para partidos nocturnos sin sombras.', 'M11 23h10m-9 4h8m-4-24a9 9 0 0 0-5 16.5c.7.5 1 1.1 1 1.9h8c0-.8.3-1.4 1-1.9A9 9 0 0 0 16 3Z'],
-  ['Vestuarios & Lockers', 'Duchas individuales con agua caliente continua, sanitarios impecables y casilleros seguros.', 'M6 13h20v3H6zm3 4v8m5-8v8m5-8v8m5-8v8M9 10a7 7 0 0 1 14 0v3'],
-  ['Quinchos & Parrillas', 'Espacios techados con asadores completos, mesas amplias y parrillas para el asado de tu equipo.', 'M6 15h20l-2 12H8L6 15Zm2 0 2-7h12l2 7M11 11h10m-9 8v5m5-5v5m5-5v5'],
-  ['Buffet & Pantallas', 'Cervezas frías, pizzas, hamburguesas caseras y TV gigante para disfrutar de los partidos profesionales.', 'M5 13a11 7 0 0 1 22 0H5Zm1 3h20v4H6zm2 7h16v3H8z'],
-  ['Estacionamiento Privado', 'Playa de estacionamiento iluminada y con vigilancia dentro del mismo predio.', 'M7 19h18l-2-8H9l-2 8Zm0 0v6h3v-3h12v3h3v-6M11 15h10m-9 8h.01M21 23h.01'],
-];
+function ComplexOverviewVideo() {
+  const [videoFailed, setVideoFailed] = useState(false);
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  return <div className="react-complex-video">
+    {videoFailed
+      ? <img src="/cancha-bombonerita.png" alt="Vista de una cancha de fútbol de La Bombonerita" />
+      : <video autoPlay={!reduceMotion} muted loop controls playsInline preload="metadata" poster="/cancha-bombonerita.png" aria-label="Recorrido en video por el complejo La Bombonerita" onError={() => setVideoFailed(true)}>
+        <source src="/complejo-recorrido.mp4" type="video/mp4" />
+        Tu navegador no puede reproducir este video.
+      </video>}
+  </div>;
+}
 
 function Facilities() {
   return <section id="complejo" className="react-facilities">
-    <div className="react-section-heading"><h2>Todo para el partido y el tercer tiempo</h2><p>Conocé las instalaciones y elegí el espacio para tu próximo encuentro.</p></div>
-    <div className="react-facility-list">{FACILITIES.map(([title, copy, icon]) => <article className="react-facility" key={title}>
-      <span className="react-facility-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d={icon} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-      <h3>{title}</h3><p>{copy}</p>
-    </article>)}</div>
-    <figure className="react-quincho"><img src="/quincho.jpg" alt="Quincho cubierto y espacio verde de La Bombonerita"/><figcaption className="react-quincho-copy"><span>EL TERCER TIEMPO</span><strong>El tercer tiempo también es parte del plan.</strong><p>Después de jugar, reunite con tu equipo en el quincho. Consultá por disponibilidad.</p><a href="https://wa.me/543874797240?text=Hola%2C%20quiero%20consultar%20por%20la%20disponibilidad%20del%20quincho." target="_blank" rel="noreferrer">Consultar por el quincho <b aria-hidden="true">↗</b></a></figcaption></figure>
+    <div className="react-complex-intro">
+      <div className="react-section-heading"><h2>Todo para el partido y el tercer tiempo</h2><p>Conocé las instalaciones y elegí el espacio para tu próximo encuentro.</p></div>
+      <ComplexOverviewVideo />
+    </div>
+  </section>;
+}
+
+function ThirdTime() {
+  return <section id="tercer-tiempo" className="react-third-time" aria-labelledby="third-time-title">
+    <figure className="react-quincho"><img src="/quincho.jpg" alt="Quincho cubierto y espacio verde de La Bombonerita"/><figcaption className="react-quincho-copy"><span>EL TERCER TIEMPO</span><strong id="third-time-title">El tercer tiempo también es parte del plan.</strong><p>Después de jugar, reunite con tu equipo en el quincho. Consultá por disponibilidad.</p><a href="https://wa.me/543874797240?text=Hola%2C%20quiero%20consultar%20por%20la%20disponibilidad%20del%20quincho." target="_blank" rel="noreferrer">Consultar por el quincho <b aria-hidden="true">↗</b></a></figcaption></figure>
   </section>;
 }
 
@@ -371,7 +380,7 @@ function App() {
 
     gsap.from('.react-hero-copy > *', { autoAlpha: 0, y: 18, duration: .55, stagger: .07, ease: 'power2.out' });
     gsap.from('.react-hero-photo', { autoAlpha: 0, scale: .96, duration: .85, delay: .12, ease: 'power2.out' });
-    gsap.utils.toArray('.react-facility, .react-field').forEach((card, index) => {
+    gsap.utils.toArray('.react-field').forEach((card, index) => {
       gsap.from(card, {
         autoAlpha: 0, y: 18, duration: .45, delay: (index % 4) * .06, ease: 'power2.out',
         scrollTrigger: { trigger: card, start: 'top 90%', toggleActions: 'play none none reverse' },
@@ -522,7 +531,7 @@ function App() {
 
   return <><Header user={user} isAdmin={isAdmin} onLogin={openLogin} onSignOut={signOut}/><main ref={mainRef}>
     {authError && <p className="react-auth-message" role="alert">{authError}</p>}
-    <Hero onReserve={() => setSelected(current => current)}/><Facilities/>
+    <Hero onReserve={() => setSelected(current => current)}/><Facilities/><ThirdTime/>
     <Reservation fields={fields} selected={selected} onSelect={selectField} date={date} setDate={setDate} time={time} setTime={setTime} times={times} user={user} form={form} setForm={setForm} onSubmit={submitBooking} submitting={submitting} onLogin={openLogin} notice={notice}/>
     <Contact/>
     <section className="react-community"><span>EL PARTIDO ES MEJOR EN EQUIPO</span><h2>¿Falta uno?</h2><a href="/fichajes">Encontrá jugadores en Fichajes <b aria-hidden="true">↗</b></a></section>
