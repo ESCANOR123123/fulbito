@@ -1,5 +1,19 @@
 # Log de Decisiones Técnicas y Cambios
 
+## 2026-11-27 - Diagnóstico de salida para Vercel
+
+### Cambio
+- Se confirmó que `npm run build` genera `dist/` en la raíz del repositorio, como define `vite.config.js` y como espera `vercel.json`.
+- El registro de despliegue que muestra `frontend/dist/` indica que Vercel está construyendo desde una raíz distinta a la del repositorio; hay que configurar el Root Directory del proyecto como raíz del repositorio y usar `dist` como Output Directory.
+
+### Archivos afectados
+- `Docs/04 - Log Tecnico y Cambios.md`
+
+### Verificación
+- `npm run build`: ejecutado correctamente; generó `dist/index.html` y los assets en `dist/assets/`. Vite emitió el aviso existente de chunk JavaScript mayor a 500 kB.
+- `git diff --check`: ejecutado sin errores.
+- No se modificó la configuración del proyecto en el dashboard de Vercel desde este entorno.
+
 ## 2026-11-27 - Bordes rectos en la foto de cancha
 
 ### Cambio

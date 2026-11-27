@@ -12,3 +12,5 @@ Docs/.obsidian/
 supabase/.temp/
 .DS_Store
 Thumbs.db
+.worktrees/
+
